@@ -14,7 +14,9 @@ const setItem = <T>(key: string, value: T): Response<T> => {
 const getItem = <T>(key: string): Response<T> => {
   try {
     const item = localStorage.getItem(key);
-    if (!item) return ErrorResponse("Item not found");
+    if (!item) {
+      return ErrorResponse("Item not found");
+    }
     return SuccessResponse<T>(JSON.parse(item));
   } catch (error) {
     return ErrorResponse(`Failed to get item: ${error}`);

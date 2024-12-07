@@ -1,23 +1,23 @@
 import Link from "next/link";
 import { TrainingProblem } from "@/types/TrainingProblem";
-import useTraining from "@/hooks/useTraining";
-import Loader from "@/components/Loader";
+import { Training } from "@/types/Training";
 import CountDown from "@/components/CountDown";
 
-const Trainer = () => {
-  const {
-    startTraining,
-    stopTraining,
-    problems,
-    training,
-    isTraining,
-    isLoading,
-    generateProblems,
-  } = useTraining();
-
-  if (isLoading) {
-    return <Loader />;
-  }
+const Trainer = ({
+  isTraining,
+  training,
+  problems,
+  generateProblems,
+  startTraining,
+  stopTraining,
+}: {
+  isTraining: boolean;
+  training: Training | null;
+  problems: TrainingProblem[] | null;
+  generateProblems: () => void;
+  startTraining: () => void;
+  stopTraining: () => void;
+}) => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4">
@@ -63,11 +63,11 @@ const Trainer = () => {
               className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
               onClick={generateProblems}
             >
-              {problems?.length > 0
+              {problems && problems.length > 0
                 ? "Regenerate Problems"
                 : "Generate Problems"}
             </button>
-            {problems?.length > 0 && (
+            {problems && problems.length > 0 && (
               <button
                 className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
                 onClick={startTraining}

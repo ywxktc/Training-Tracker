@@ -1,10 +1,31 @@
 "use client";
 
 import useUser from "@/hooks/useUser";
+import useTraining from "@/hooks/useTraining";
 import Trainer from "@/components/Trainer";
+import Loader from "@/components/Loader";
+import Error from "@/components/Error";
 
 const Training = () => {
   const { user } = useUser();
+
+  const {
+    startTraining,
+    stopTraining,
+    problems,
+    training,
+    isTraining,
+    isLoading,
+    generateProblems,
+  } = useTraining();
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (!user || !problems) {
+    return <Error />;
+  }
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -35,7 +56,14 @@ const Training = () => {
           <span className="font-bold">P4:</span> {user?.level.P4}
         </div>
       </div>
-      <Trainer />
+      <Trainer
+        isTraining={isTraining}
+        training={training}
+        problems={problems}
+        generateProblems={generateProblems}
+        startTraining={startTraining}
+        stopTraining={stopTraining}
+      />
     </div>
   );
 };
