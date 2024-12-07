@@ -1,3 +1,5 @@
+import { SuccessResponse, ErrorResponse } from "@/types/Response";
+
 const getUser = async (codeforcesHandle: string) => {
   try {
     const res = await fetch(
@@ -5,12 +7,11 @@ const getUser = async (codeforcesHandle: string) => {
     );
     const data = await res.json();
     if (data.status === "OK") {
-      return data.result[0];
+      return SuccessResponse(data.result[0]);
     }
-    return null;
+    return ErrorResponse("User not found");
   } catch (error) {
-    console.error(error);
-    return null;
+    return ErrorResponse((error as Error).message);
   }
 };
 

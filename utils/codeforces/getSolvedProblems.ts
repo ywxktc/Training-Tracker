@@ -1,22 +1,24 @@
 import { User } from "@/types/User";
 import { CodeforcesProblem, CodeforcesSubmission } from "@/types/Codeforces";
+import { SuccessResponse, ErrorResponse, Response } from "@/types/Response";
 
-const getSolvedProblems = async (user: User): Promise<CodeforcesProblem[]> => {
+const getSolvedProblems = async (
+  user: User
+): Promise<Response<CodeforcesProblem[]>> => {
   try {
     const res = await fetch(
       `https://codeforces.com/api/user.status?handle=${user.codeforcesHandle}`
     );
     const data = await res.json();
     if (data.status !== "OK") {
-      throw new Error("Failed to fetch solved problems");
+      return ErrorResponse("Failed to fetch solved problems");
     }
     const problems = data.result
       .filter((submission: CodeforcesSubmission) => submission.verdict === "OK")
       .map((submission: CodeforcesSubmission) => submission.problem);
-    return problems;
+    return SuccessResponse(problems);
   } catch (error) {
-    console.error(error);
-    return [];
+    return ErrorResponse((error as Error).message);
   }
 };
 

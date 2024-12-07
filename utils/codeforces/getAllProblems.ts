@@ -1,16 +1,16 @@
 import { CodeforcesProblem } from "@/types/Codeforces";
+import { SuccessResponse, ErrorResponse, Response } from "@/types/Response";
 
-const getAllProblems = async (): Promise<CodeforcesProblem[]> => {
+const getAllProblems = async (): Promise<Response<CodeforcesProblem[]>> => {
   try {
     const res = await fetch("https://codeforces.com/api/problemset.problems");
     const data = await res.json();
     if (data.status !== "OK") {
-      throw new Error("Failed to fetch problems");
+      return ErrorResponse("Failed to fetch problems");
     }
-    return data.result.problems;
+    return SuccessResponse(data.result.problems);
   } catch (error) {
-    console.error(error);
-    return [];
+    return ErrorResponse((error as Error).message);
   }
 };
 

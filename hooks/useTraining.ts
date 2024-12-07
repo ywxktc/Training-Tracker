@@ -41,9 +41,19 @@ const useTraining = () => {
     if (user) {
       const initProblems = async () => {
         setIsLoading(true);
-        const problems = await getAllProblems();
+
+        const allRes = await getAllProblems();
+        if (!allRes.success) {
+          return;
+        }
+        const problems = allRes.data;
         setAllProblems(problems);
-        const solvedProblems = await getSolvedProblems(user);
+
+        const solvedRes = await getSolvedProblems(user);
+        if (!solvedRes.success) {
+          return;
+        }
+        const solvedProblems = solvedRes.data;
         setSolvedProblems(solvedProblems);
 
         console.log(solvedProblems);

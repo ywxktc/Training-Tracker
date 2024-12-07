@@ -21,10 +21,11 @@ const useUser = () => {
   }, [user]);
 
   const updateUser = async (codeforcesHandle: string) => {
-    const profile = await getUser(codeforcesHandle);
-    if (!profile) {
+    const res = await getUser(codeforcesHandle);
+    if (!res.success) {
       return;
     }
+    const profile = res.data;
     const newUser = {
       codeforcesHandle: profile.handle as string,
       avatar: profile.avatar as string,
