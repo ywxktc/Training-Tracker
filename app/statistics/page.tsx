@@ -33,9 +33,11 @@ const Statistics = () => {
           Clear History
         </button>
       </div>
-      <div className="w-full flex justify-center">
-        <ProgressChart history={history} />
-      </div>
+      {history && history.length > 0 && (
+        <div className="w-full flex justify-center">
+          <ProgressChart history={history} />
+        </div>
+      )}
       <div className="w-full flex flex-col gap-4">
         {history && history.length > 0 ? (
           <History history={history} deleteTraining={deleteTraining} />
