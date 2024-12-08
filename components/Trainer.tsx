@@ -54,9 +54,9 @@ const Trainer = ({
   refreshProblemStatus: () => void;
   finishTraining: () => void;
 }) => {
-  const onFinishTraining = async () => {
+  const onFinishTraining = () => {
     if (confirm("Are you sure to finish the training?")) {
-      await finishTraining();
+      finishTraining();
     }
   };
 

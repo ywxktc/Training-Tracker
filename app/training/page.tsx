@@ -16,9 +16,9 @@ const Training = () => {
     training,
     isTraining,
     isLoading,
-    generateProblems,
     refreshProblemStatus,
     finishTraining,
+    generateProblems,
   } = useTraining();
 
   if (isLoading) {

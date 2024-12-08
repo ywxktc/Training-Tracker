@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useSWR from "swr";
 import { CodeforcesProblem } from "@/types/Codeforces";
 import getAllProblems from "@/utils/codeforces/getAllProblems";
@@ -11,6 +11,11 @@ const SOLVED_PROBLEMS_CACHE_KEY = (handle: string) =>
 
 const useProblems = (user: User | null | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [problemPools, setProblemPools] = useState<{
+    rating: number,
+    solved: CodeforcesProblem[],
+    unsolved: CodeforcesProblem[]
+  }[]>([]);
 
   // Fetch all problems
   const { data: allProblems, isLoading: isLoadingAll } = useSWR<CodeforcesProblem[]>(
@@ -52,6 +57,36 @@ const useProblems = (user: User | null | undefined) => {
     }
   );
 
+  // Update problem pools when problems data changes
+  useEffect(() => {
+    if (!user || isLoadingAll) {
+      return;
+    }
+  
+    const ratings = [
+      parseInt(user.level.P1),
+      parseInt(user.level.P2),
+      parseInt(user.level.P3),
+      parseInt(user.level.P4),
+    ];
+  
+    const solvedProblemIds = new Set(
+      solvedProblems?.map((p) => `${p.contestId}_${p.index}`) ?? []
+    );
+  
+    const unsolvedProblems = allProblems?.filter(
+      (problem) => !solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
+    );
+  
+    const newProblemPools = ratings.map((rating) => ({
+      rating,
+      solved: unsolvedProblems?.filter((problem) => problem.rating === rating) ?? [],
+      unsolved: unsolvedProblems?.filter((problem) => problem.rating === rating) ?? [],
+    }));
+  
+    setProblemPools(newProblemPools);
+  }, [user, allProblems, solvedProblems, isLoadingAll]);
+
   const refreshSolvedProblems = async () => {
     if (!user) {
       return;
@@ -78,12 +113,35 @@ const useProblems = (user: User | null | undefined) => {
     }
   };
 
+  const getRandomProblems = () => {
+    if (!user || problemPools.length === 0) {
+      return;
+    }
+
+    const newProblems = problemPools.map((pool) => {
+      let problem = null;
+      if (pool.unsolved.length > 0) {
+        problem = pool.unsolved[Math.floor(Math.random() * pool.unsolved.length)];
+      } else {
+        problem = pool.solved[Math.floor(Math.random() * pool.solved.length)];
+      }
+      return {
+        ...problem,
+        url: `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`,
+        solvedTime: null,
+      };
+    });
+
+    return newProblems;
+  };
+
   return {
     allProblems: allProblems ?? [],
     solvedProblems: solvedProblems ?? [],
     isLoading: isLoading || isLoadingAll || isLoadingSolved,
 
     refreshSolvedProblems,
+    getRandomProblems,
   };
 };
 

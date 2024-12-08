@@ -7,7 +7,6 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/training", label: "Training" },
   { href: "/statistics", label: "Statistics" },
-  { href: "/about", label: "About" },
 ];
 
 const NavBar = () => {

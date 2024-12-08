@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import useUser from "@/hooks/useUser";
 import useProblems from "@/hooks/useProblems";
 import { TrainingProblem } from "@/types/TrainingProblem";
-import { CodeforcesProblem } from "@/types/Codeforces";
 import { Training } from "@/types/Training";
 import useHistory from "@/hooks/useHistory";
 
@@ -14,16 +13,13 @@ const useTraining = () => {
   const { user, isLoading: isUserLoading } = useUser();
   const { addTraining } = useHistory();
   const {
-    allProblems,
     solvedProblems,
     isLoading: isProblemsLoading,
     refreshSolvedProblems,
+    getRandomProblems,
   } = useProblems(user);
 
-  const [problemPools, setProblemPools] = useState<{
-    rating: number;
-    problems: CodeforcesProblem[];
-  }[]>([]);
+
   const [problems, setProblems] = useState<TrainingProblem[]>([]);
   const [training, setTraining] = useState<Training | null>(null);
   const [isTraining, setIsTraining] = useState(false);
@@ -127,34 +123,7 @@ const useTraining = () => {
     }
   }, []);
 
-  // Update problem pools when problems data changes
-  useEffect(() => {
-    if (!user || isProblemsLoading) {
-      return;
-    }
 
-    const ratings = [
-      parseInt(user.level.P1),
-      parseInt(user.level.P2),
-      parseInt(user.level.P3),
-      parseInt(user.level.P4),
-    ];
-
-    const solvedProblemIds = new Set(
-      solvedProblems.map((p) => `${p.contestId}_${p.index}`)
-    );
-
-    const unsolvedProblems = allProblems.filter(
-      (problem) => !solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
-    );
-
-    const newProblemPools = ratings.map((rating) => ({
-      rating,
-      problems: unsolvedProblems.filter((problem) => problem.rating === rating),
-    }));
-
-    setProblemPools(newProblemPools);
-  }, [user, allProblems, solvedProblems, isProblemsLoading]);
 
   // Update training in localStorage
   useEffect(() => {
@@ -209,20 +178,7 @@ const useTraining = () => {
     updateProblemStatus();
   }, [isTraining, training, solvedProblems, updateProblemStatus]);
 
-  const generateProblems = () => {
-    if (!user || problemPools.length === 0) return;
 
-    const newProblems = problemPools.map((pool) => {
-      const problem = pool.problems[Math.floor(Math.random() * pool.problems.length)];
-      return {
-        ...problem,
-        url: `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`,
-        solvedTime: null,
-      };
-    });
-
-    setProblems(newProblems);
-  };
 
   const startTraining = () => {
     if (!user) {
@@ -250,13 +206,20 @@ const useTraining = () => {
     localStorage.removeItem(TRAINING_STORAGE_KEY);
   };
 
+  const generateProblems = () => {
+    const newProblems = getRandomProblems();
+    if (newProblems) {
+      setProblems(newProblems);
+    }
+  };
+
   return {
     problems,
-    generateProblems,
     isLoading: isUserLoading || isProblemsLoading,
 
     training,
     isTraining,
+    generateProblems,
     startTraining,
     stopTraining,
     refreshProblemStatus,
