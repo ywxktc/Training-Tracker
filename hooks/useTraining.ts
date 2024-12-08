@@ -10,7 +10,7 @@ const TRAINING_STORAGE_KEY = "training-tracker-training";
 
 const useTraining = () => {
   const router = useRouter();
-  const { user, isLoading: isUserLoading } = useUser();
+  const { user, isLoading: isUserLoading, updateUserLevel } = useUser();
   const { addTraining } = useHistory();
   const {
     solvedProblems,
@@ -104,6 +104,12 @@ const useTraining = () => {
     }));  
 
     addTraining({ ...currentTraining, problems: updatedProblems });
+
+    // if solved all problems, user level +1
+    // otherwise, user level -1
+    const delta = updatedProblems.every((p) => p.solvedTime) ? 1 : -1;
+    updateUserLevel({ delta });
+
     router.push("/statistics");
   }, [training, addTraining, router, refreshSolvedProblems]);
 

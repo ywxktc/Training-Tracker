@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import useSWR from "swr";
 import { User } from "@/types/User";
 import getUser from "@/utils/codeforces/getUser";
-import getLevelByRating from "@/utils/getLevelByRating";
+import { getLevel, getLevelByRating } from "@/utils/getLevel";
 import { SuccessResponse, ErrorResponse } from "@/types/Response";
 
 const USER_STORAGE_KEY = "training-tracker-user";
@@ -57,6 +57,25 @@ const useUser = () => {
     }
   };
 
+  const updateUserLevel = async ({ delta }: { delta: number }) => {
+    if (!user) {
+      return;
+    }
+
+    const newLevel = getLevel(+user.level.level + delta);
+
+    if (!newLevel || +newLevel.level < 1 || +newLevel.level > 109) {
+      return ErrorResponse("Failed to update user level");
+    }
+
+    try {
+      await mutate({ ...user, level: newLevel }, { revalidate: false });
+      return SuccessResponse("User level updated successfully");
+    } catch (error) {
+      return ErrorResponse("Failed to update user level");
+    }
+  }
+
   const logout = () => {
     mutate(null, { revalidate: false });
     localStorage.removeItem(USER_STORAGE_KEY);
@@ -66,7 +85,9 @@ const useUser = () => {
     user,
     isLoading,
     error,
+
     updateUser,
+    updateUserLevel,
     logout,
   };
 };
