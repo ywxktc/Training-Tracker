@@ -46,12 +46,18 @@ const useHistory = () => {
     );
   };
 
+  const clearHistory = () => {
+    setHistory([]);
+    localStorage.removeItem(HISTORY_STORAGE_KEY);
+  };
+
   return {
     history,
     isLoading: isUserLoading,
 
     addTraining,
     deleteTraining,
+    clearHistory,
   };
 };
 

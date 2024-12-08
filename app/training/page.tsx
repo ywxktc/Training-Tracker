@@ -18,6 +18,7 @@ const Training = () => {
     isLoading,
     generateProblems,
     refreshProblemStatus,
+    finishTraining,
   } = useTraining();
 
   if (isLoading) {
@@ -66,6 +67,7 @@ const Training = () => {
         startTraining={startTraining}
         stopTraining={stopTraining}
         refreshProblemStatus={refreshProblemStatus}
+        finishTraining={finishTraining}
       />
     </div>
   );

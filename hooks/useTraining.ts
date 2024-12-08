@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import useUser from "@/hooks/useUser";
 import useProblems from "@/hooks/useProblems";
@@ -27,6 +27,8 @@ const useTraining = () => {
   const [problems, setProblems] = useState<TrainingProblem[]>([]);
   const [training, setTraining] = useState<Training | null>(null);
   const [isTraining, setIsTraining] = useState(false);
+
+  const timerRef = useRef<NodeJS.Timeout>();
 
   const updateProblemStatus = useCallback(() => {
     const solvedProblemIds = new Set(
@@ -66,6 +68,28 @@ const useTraining = () => {
   }, [refreshSolvedProblems, updateProblemStatus]);
 
   const finishTraining = useCallback(async () => {
+    // Immediately set training state to false to prevent any race conditions
+    setIsTraining(false);
+    
+    // Clear any existing timer first
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = undefined;
+    }
+
+    // Capture current training value before clearing state
+    const currentTraining = training;
+    
+    // Clear all training-related states immediately
+    setProblems([]);
+    setTraining(null);
+    localStorage.removeItem(TRAINING_STORAGE_KEY);
+
+    // Only proceed with history update if there was an active training
+    if (!currentTraining) {
+      return;
+    }
+
     const latestSolvedProblems = await refreshSolvedProblems();
 
     if (!latestSolvedProblems) {
@@ -76,22 +100,14 @@ const useTraining = () => {
       latestSolvedProblems.map((p) => `${p.contestId}_${p.index}`)
     );
 
-    if (training) {
-      const updatedProblems = training.problems.map(problem => ({
-        ...problem,
-        solvedTime: solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
-          ? problem.solvedTime ?? new Date().getTime()
-          : problem.solvedTime
-      }));  
+    const updatedProblems = currentTraining.problems.map(problem => ({
+      ...problem,
+      solvedTime: solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
+        ? problem.solvedTime ?? new Date().getTime()
+        : problem.solvedTime
+    }));  
 
-      addTraining({ ...training, problems: updatedProblems });
-    }
-
-    setProblems([]);
-    setIsTraining(false);
-    setTraining(null);
-    localStorage.removeItem(TRAINING_STORAGE_KEY);
-
+    addTraining({ ...currentTraining, problems: updatedProblems });
     router.push("/statistics");
   }, [training, addTraining, router, refreshSolvedProblems]);
 
@@ -142,23 +158,39 @@ const useTraining = () => {
 
   // Update training in localStorage
   useEffect(() => {
-    if (!training) return;
+    if (!training) {
+      // Ensure cleanup when training becomes null
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = undefined;
+      }
+      return;
+    }
 
     localStorage.setItem(TRAINING_STORAGE_KEY, JSON.stringify(training));
     const now = new Date().getTime();
-    setIsTraining(now <= training.endTime);
-
     const timeLeft = training.endTime - now;
+
+    // If training has expired, finish it
     if (timeLeft <= 0) {
       finishTraining();
       return;
     }
 
-    const timerId = setTimeout(() => {
+    setIsTraining(now <= training.endTime);
+
+    // Store timer ID in the ref
+    timerRef.current = setTimeout(() => {
       finishTraining();
     }, timeLeft);
 
-    return () => clearTimeout(timerId);
+    // Clean up timer when training changes or component unmounts
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = undefined;
+      }
+    };
   }, [training, finishTraining]);
 
   // if all problems are solved, finish training
@@ -213,14 +245,10 @@ const useTraining = () => {
   };
 
   const stopTraining = () => {
-    if (confirm("Are you sure to stop the training?")) {
-      setIsTraining(false);
-      setTraining(null);
-      localStorage.removeItem(TRAINING_STORAGE_KEY);
-    }
+    setIsTraining(false);
+    setTraining(null);
+    localStorage.removeItem(TRAINING_STORAGE_KEY);
   };
-
-
 
   return {
     problems,
@@ -232,6 +260,7 @@ const useTraining = () => {
     startTraining,
     stopTraining,
     refreshProblemStatus,
+    finishTraining,
   };
 };
 

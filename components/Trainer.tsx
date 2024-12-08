@@ -43,6 +43,7 @@ const Trainer = ({
   startTraining,
   stopTraining,
   refreshProblemStatus,
+  finishTraining,
 }: {
   isTraining: boolean;
   training: Training | null;
@@ -51,7 +52,19 @@ const Trainer = ({
   startTraining: () => void;
   stopTraining: () => void;
   refreshProblemStatus: () => void;
+  finishTraining: () => void;
 }) => {
+  const onFinishTraining = async () => {
+    if (confirm("Are you sure to finish the training?")) {
+      await finishTraining();
+    }
+  };
+
+  const onStopTraining = () => {
+    if (confirm("Are you sure to stop the training?")) {
+      stopTraining();
+    }
+  };
 
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4">
@@ -93,7 +106,7 @@ const Trainer = ({
               onClick={generateProblems}
             >
               {problems && problems.length > 0
-                ? "Regenerate Problems"
+                ? "Regenerate"
                 : "Generate Problems"}
             </button>
             {problems && problems.length > 0 && (
@@ -101,22 +114,28 @@ const Trainer = ({
                 className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
                 onClick={startTraining}
               >
-                Start Training
+                Start
               </button>
             )}
           </>
         ) : (
           training && (
             <div className="flex flex-row gap-4 items-center">
+              <button
+                className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
+                onClick={onFinishTraining}
+              >
+                Finish
+              </button>
               <CountDown
                 startTime={training.startTime}
                 endTime={training.endTime}
               />
               <button
-                className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
-                onClick={stopTraining}
+                className="w-fit bg-red-500 hover:bg-red-700 text-white rounded-md p-2 transition-colors duration-300"
+                onClick={onStopTraining}
               >
-                Stop Training
+                Stop
               </button>
             </div>
           )
