@@ -13,12 +13,13 @@ const Profile = ({
   return (
     <div className="flex items-center justify-center gap-4">
       <Image
+        className="w-40"
         src={user?.avatar || "default-avatar.jpg"}
         alt="avatar"
         width={150}
         height={150}
       />
-      <div className="flex flex-col items-start justify-center">
+      <div className="flex flex-col items-start justify-center gap-2">
         <div>
           <span className="font-bold">Username:</span>{" "}
           {user?.codeforcesHandle}

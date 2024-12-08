@@ -5,7 +5,7 @@ import getUser from "@/utils/codeforces/getUser";
 import getLevelByRating from "@/utils/getLevelByRating";
 import { SuccessResponse, ErrorResponse } from "@/types/Response";
 
-const USER_STORAGE_KEY = "user";
+const USER_STORAGE_KEY = "training-tracker-user";
 const USER_CACHE_KEY = "codeforces-user";
 
 const getStoredUser = () => {

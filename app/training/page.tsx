@@ -17,6 +17,7 @@ const Training = () => {
     isTraining,
     isLoading,
     generateProblems,
+    refreshProblemStatus,
   } = useTraining();
 
   if (isLoading) {
@@ -29,16 +30,17 @@ const Training = () => {
 
   return (
     <div className="w-full flex flex-col gap-4">
+      <h1 className="text-2xl font-bold">Let&apos;s Practice!</h1>
       <div className="w-full flex gap-4">
-        <div className="w-full flex flex-row justify-between">
+        <div className="w-full flex flex-row gap-2">
           <div>
-            <span className="font-bold">Level:</span> {user?.level.level}
+            <span className="font-bold">Level:</span> {user?.level.level} |
           </div>
           <div>
-            <span className="font-bold">Performance:</span> {user?.level.Performance}
+            <span className="font-bold">Performance:</span> {user?.level.Performance} |
           </div>
           <div>
-            <span className="font-bold">Time:</span> {user?.level.time}
+            <span className="font-bold">Time:</span> {user?.level.time} minutes
           </div>
         </div>
       </div>
@@ -63,6 +65,7 @@ const Training = () => {
         generateProblems={generateProblems}
         startTraining={startTraining}
         stopTraining={stopTraining}
+        refreshProblemStatus={refreshProblemStatus}
       />
     </div>
   );
