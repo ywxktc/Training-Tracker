@@ -5,7 +5,7 @@ import CountDown from "@/components/CountDown";
 import { ProblemTag } from "@/types/Codeforces";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw } from "lucide-react";
 
 const ProblemLink = ({
   problem,

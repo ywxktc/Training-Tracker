@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trash2 } from 'lucide-react';
+import { Trash2 } from "lucide-react";
 
 const Problem = ({ problem, startTime }: { problem: TrainingProblem; startTime: number }) => {
   const getSolvedStatus = () => {

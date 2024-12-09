@@ -4,7 +4,7 @@ const Introduction = () => {
   return (
     <div className="w-full flex flex-col items-center justify-center gap-4">
       <p className="w-full text-left">
-        This is a training tool for competitive programming, inspired by{" "}
+        Training Tracker is a practice tool for competitive programming, inspired by{" "}
         <Link
           href="https://codeforces.com/blog/entry/136704"
           target="_blank"
@@ -23,7 +23,7 @@ const Introduction = () => {
         for the idea.
       </p>
       <p className="w-full text-left">
-        This tool is developed by{" "}
+        This project is developed by{" "}
         <Link
           href="https://codeforces.com/profile/C0ldSmi1e"
           target="_blank"
