@@ -22,6 +22,46 @@ const Introduction = () => {
         </Link>{" "}
         for the idea.
       </p>
+      <p className="w-full text-left font-bold">Usage:</p>
+      <p className="w-full text-left">
+        1. Enter your Codeforces handle in{" "}
+        <Link href="/" className="text-blue-500 hover:underline">
+          Home
+        </Link>
+        {" "}page. This step is <span className="font-bold">required</span>, because the data are fetched from Codeforces API.
+      </p>
+      <p className="w-full text-left">
+        2. Generate random problems in{" "}
+        <Link href="/training" className="text-blue-500 hover:underline">
+          Training
+        </Link>
+        {" "}page. You can also generate problems with tags.
+      </p>
+      <p className="w-full text-left">
+        3. View your training history in{" "}
+        <Link href="/statistics" className="text-blue-500 hover:underline">
+          Statistics
+        </Link>
+        {" "}page.
+      </p>
+      <p className="w-full text-left">
+        4. While you are training, if you click the <span className="font-bold">Finish</span> button, the record will be added to your training history. Otherwise, if you click the <span className="font-bold">Stop</span> button, the record will not be added to your training history.
+      </p>
+      <p className="w-full text-left font-bold">Note:</p>
+      <p className="w-full text-left">
+        1. The formula of getting user&apos;s level, ratings of generated problems and training performance are from{" "}
+        <Link
+          href="https://codeforces.com/blog/entry/136704"
+          target="_blank"
+          className="text-blue-500 hover:underline"
+        >
+          this blog post
+        </Link>
+        .
+      </p>
+      <p className="w-full text-left">
+        2. For now, <span className="font-bold">all the data (user info, training history, etc.) are stored in your browser&apos;s local storage</span>, so once you clear the data, you will lose all your training history.
+      </p>
       <p className="w-full text-left">
         This project is developed by{" "}
         <Link

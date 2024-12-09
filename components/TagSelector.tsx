@@ -15,6 +15,9 @@ const TagSelector = ({
 }) => {
   return (
     <div className="space-y-2">
+      <span className="text-sm font-medium text-muted-foreground">
+        Problems will be generated randomly if no tags are selected.
+      </span>
       <ScrollArea className="w-full rounded-md border">
         <div className="flex flex-wrap gap-2 p-4">
           {allTags.map((tag) => (
