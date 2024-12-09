@@ -1,61 +1,82 @@
 import { Training } from "@/types/Training";
+import { TrainingProblem } from "@/types/TrainingProblem";
 
-const getPerformance = (training: Training): number => {
-  const level = +training.level.level;
-  const startTime = training.startTime;
+function getPerformance(training: Training) {
+  const D = training.level.id;
+  
+  // Extract ratings (E, F, G, H)
+  const E = training.problems[0].rating;
+  const F = training.problems[1].rating;
+  const G = training.problems[2].rating;
+  const H = training.problems[3].rating;
 
-  // Extract ratings and penalties from problems
-  const data = training.problems.map((problem) => {
-    const penalty = problem.solvedTime
-      ? (problem.solvedTime - startTime) / 60000
-      : null;
-    return { rating: problem.rating, penalty };
-  });
-
-  // Helper function to calculate the base range value
-  function calculateRange(base: number, level: number): number {
-    return Math.max(base, Math.min(base + 60, base + 2.5 * (level - 52)));
+  // Extract solved times (I, J, K, L) adjusted by startTime
+  function adjustedTime(p: TrainingProblem) {
+    return p.solvedTime !== null ? (p.solvedTime - training.startTime) : null;
   }
 
-  // Get the rating values (E-H)
-  const [r1, r2, r3, r4] = data.map(d => d.rating);
-  
-  // Get the penalty values (I-L)
-  const [t1, t2, t3, t4] = data.map(d => d.penalty);
+  const I = adjustedTime(training.problems[0]);
+  const J = adjustedTime(training.problems[1]);
+  const K = adjustedTime(training.problems[2]);
+  const L = adjustedTime(training.problems[3]);
 
-  let result: number;
+  // Define the scale functions
+  function scale1(D: number) {
+    // scale1 = MAX(135, MIN(195, 135 + 2.5*(D-52)))
+    const val = 135 + 2.5 * (D - 52);
+    return Math.max(135, Math.min(195, val));
+  }
 
-  // Following the same logic structure as the Excel formula
-  if (t4 === null) {
-    if (t3 === null) {
-      if (t2 === null) {
-        if (t1 === null) {
-          // Base case: only first rating available
-          result = r1 - 50;
+  function scale2(D: number) {
+    // scale2 = MAX(120, MIN(180, 120 + 2.5*(D-52)))
+    const val = 120 + 2.5 * (D - 52);
+    return Math.max(120, Math.min(180, val));
+  }
+
+  // Compute performance based on the provided logic
+  let performance;
+  if (L === null) {
+    // L blank
+    if (K === null) {
+      // K blank
+      if (J === null) {
+        // J blank
+        if (I === null) {
+          // I blank
+          // E20 - 50
+          performance = E - 50;
         } else {
-          // Case with T1 value
-          const range = calculateRange(135, level);
-          result = (t1 / range) * r1 + ((range - t1) / range) * r2;
+          // I not blank
+          // (I/scale1)*E + ((scale1 - I)/scale1)*F
+          const sc1 = scale1(D);
+          performance = (I / sc1) * E + ((sc1 - I) / sc1) * F;
         }
       } else {
-        // Case with T2 value
-        const range = calculateRange(135, level);
-        result = (t2 / range) * r2 + ((range - t2) / range) * r3;
+        // J not blank
+        // (J/scale1)*F + ((scale1 - J)/scale1)*G
+        const sc1 = scale1(D);
+        performance = (J / sc1) * F + ((sc1 - J) / sc1) * G;
       }
     } else {
-      // Case with T3 value
-      const range = calculateRange(135, level);
-      result = (t3 / range) * r3 + ((range - t3) / range) * r4;
+      // K not blank
+      // (K/scale1)*G + ((scale1 - K)/scale1)*H
+      const sc1 = scale1(D);
+      performance = (K / sc1) * G + ((sc1 - K) / sc1) * H;
     }
   } else {
-    // Case with T4 value
-    const range = calculateRange(120, level);
-    result = (t4 / range) * r4 + 
-            ((range - t4) / range) * (r4 + 400) + 
-            ((level - 1) % 4) * 12.5;
+    // L not blank
+    // (L/scale2)*H + ((scale2 - L)/scale2)*(H + 400) + MOD(D-1,4)*12.5
+    const sc2 = scale2(D);
+    const modVal = ((D - 1) % 4 + 4) % 4; // ensure positive mod
+    performance = (L / sc2) * H 
+                + ((sc2 - L) / sc2) * (H + 400) 
+                + modVal * 12.5;
   }
 
-  return Math.round(result);
-};
+  // Round the result
+  performance = Math.round(performance);
 
-export default getPerformance;
+  return performance;
+}
+
+export { getPerformance };
