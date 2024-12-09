@@ -3,6 +3,9 @@ import { TrainingProblem } from "@/types/TrainingProblem";
 import { Training } from "@/types/Training";
 import CountDown from "@/components/CountDown";
 import { ProblemTag } from "@/types/Codeforces";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { RefreshCw } from 'lucide-react';
 
 const ProblemLink = ({
   problem,
@@ -23,16 +26,14 @@ const ProblemLink = ({
   };
 
   return (
-    <div className="w-1/4 flex items-center text-left">
-      <Link
-        className="text-blue-500 hover:underline duration-300"
-        href={problem.url}
-        target="_blank"
-      >
-        {getSolvedStatus()}
-        {problem.contestId}-{problem.index}
-      </Link>
-    </div>
+    <Link
+      className="text-primary hover:underline"
+      href={problem.url}
+      target="_blank"
+    >
+      {getSolvedStatus()}
+      {problem.contestId}-{problem.index}
+    </Link>
   );
 };
 
@@ -70,83 +71,59 @@ const Trainer = ({
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center gap-4">
-      <div className="w-full flex">
-        <div className="w-full flex">
-          {isTraining && training?.problems
-            ? (
-              <>
-                {training.problems.map((problem) => (
-                  <ProblemLink
-                    key={`${problem.contestId}-${problem.index}`}
-                    problem={problem}
-                    isTraining={isTraining}
-                    startTime={training?.startTime ?? null}
-                  />
-                ))}
-                <button
-                  onClick={refreshProblemStatus}
-                >
-                  🔄
-                </button>
-              </>
-            ) : problems?.map((problem) => (
-              <ProblemLink
-                key={`${problem.contestId}-${problem.index}`}
-                problem={problem}
-                isTraining={isTraining}
-                startTime={training?.startTime ?? null}
-              />
-            ))}
+    <Card>
+      <CardContent className="pt-6 space-y-4">
+        <div className="flex flex-wrap justify-between gap-4">
+          {(isTraining && training?.problems ? training.problems : problems)?.map((problem) => (
+            <ProblemLink
+              key={`${problem.contestId}-${problem.index}`}
+              problem={problem}
+              isTraining={isTraining}
+              startTime={training?.startTime ?? null}
+            />
+          ))}
         </div>
-      </div>
-
-      <div className="w-full flex justify-center gap-4">
-        {!isTraining ? (
-          <>
-            <button
-              className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
-              onClick={() => generateProblems(selectedTags)}
-            >
-              {problems && problems.length > 0
-                ? "Regenerate"
-                : "Generate Problems"}
-            </button>
-            {problems && problems.length > 0 && (
-              <button
-                className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
-                onClick={startTraining}
-              >
-                Start
-              </button>
-            )}
-          </>
-        ) : (
-          training && (
-            <div className="flex flex-col gap-4 items-center">
-              <CountDown
-                startTime={training.startTime}
-                endTime={training.endTime}
-              />
-              <div className="flex flex-row gap-4 items-center">
-              <button
-                className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
-                onClick={onFinishTraining}
-              >
-                Finish
-              </button>
-              <button
-                className="w-fit bg-red-500 hover:bg-red-700 text-white rounded-md p-2 transition-colors duration-300"
-                onClick={onStopTraining}
-              >
-                Stop
-                </button>
-              </div>
-            </div>
-          )
+        {isTraining && (
+          <Button variant="outline" size="sm" onClick={refreshProblemStatus}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh Status
+          </Button>
         )}
-      </div>
-    </div>
+        <div className="flex justify-center gap-4">
+          {!isTraining ? (
+            <>
+              <Button
+                onClick={() => generateProblems(selectedTags)}
+              >
+                {problems && problems.length > 0 ? "Regenerate" : "Generate Problems"}
+              </Button>
+              {problems && problems.length > 0 && (
+                <Button onClick={startTraining}>
+                  Start
+                </Button>
+              )}
+            </>
+          ) : (
+            training && (
+              <div className="flex flex-col items-center gap-4">
+                <CountDown
+                  startTime={training.startTime}
+                  endTime={training.endTime}
+                />
+                <div className="flex gap-4">
+                  <Button onClick={onFinishTraining}>
+                    Finish
+                  </Button>
+                  <Button variant="destructive" onClick={onStopTraining}>
+                    Stop
+                  </Button>
+                </div>
+              </div>
+            )
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

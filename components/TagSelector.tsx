@@ -1,4 +1,6 @@
 import { ProblemTag } from "@/types/Codeforces";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const TagSelector = ({
   allTags,
@@ -12,26 +14,28 @@ const TagSelector = ({
   onClearTags: () => void;
 }) => {
   return (
-    <div className="flex flex-wrap gap-2">
-      {allTags.map((tag) => (
-        <button
-          key={tag.value}
-          className={`px-2 py-1 rounded-md ${
-            selectedTags.includes(tag)
-              ? "bg-blue-500 text-white"
-              : "bg-gray-200 text-gray-800"
-          }`}
-          onClick={() => onTagClick(tag)}
-        >
-          {tag.name}
-        </button>
-      ))}
-      <button
-        className="w-24 px-2 py-1 rounded-md bg-red-500 text-white"
+    <div className="space-y-2">
+      <ScrollArea className="w-full rounded-md border">
+        <div className="flex flex-wrap gap-2 p-4">
+          {allTags.map((tag) => (
+            <Button
+              key={tag.value}
+              variant={selectedTags.includes(tag) ? "default" : "outline"}
+              size="sm"
+              onClick={() => onTagClick(tag)}
+            >
+              {tag.name}
+            </Button>
+          ))}
+        </div>
+      </ScrollArea>
+      <Button
+        variant="destructive"
+        size="sm"
         onClick={onClearTags}
       >
-        Clear
-      </button>
+        Clear All
+      </Button>
     </div>
   );
 };

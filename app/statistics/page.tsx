@@ -4,6 +4,8 @@ import useHistory from "@/hooks/useHistory";
 import Loader from "@/components/Loader";
 import History from "@/components/History";
 import ProgressChart from "@/components/ProgressChart";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Statistics = () => {
   const { history, isLoading, deleteTraining, clearHistory } = useHistory();
@@ -23,29 +25,26 @@ const Statistics = () => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4">
-      <div className="flex flex-row justify-between items-center">
-        <h1 className="text-2xl font-bold">Statistics</h1>
-        <button
-          className="bg-red-500 hover:bg-red-700 text-white rounded-md p-2 transition-colors duration-300"
-          onClick={onClearHistory}
-        >
+    <Card className="w-full">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-2xl font-bold">Statistics</CardTitle>
+        <Button variant="destructive" onClick={onClearHistory}>
           Clear History
-        </button>
-      </div>
-      {history && history.length > 0 && (
-        <div className="w-full flex justify-center">
-          <ProgressChart history={history} />
-        </div>
-      )}
-      <div className="w-full flex flex-col gap-4">
+        </Button>
+      </CardHeader>
+      <CardContent>
         {history && history.length > 0 ? (
-          <History history={history} deleteTraining={deleteTraining} />
+          <>
+            <div className="w-full mb-6">
+              <ProgressChart history={history} />
+            </div>
+            <History history={history} deleteTraining={deleteTraining} />
+          </>
         ) : (
-          <div>No training history</div>
+          <div className="text-center py-4 text-muted-foreground">No training history</div>
         )}
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

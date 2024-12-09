@@ -1,6 +1,16 @@
 import Link from "next/link";
 import { Training } from "@/types/Training";
 import { TrainingProblem } from "@/types/TrainingProblem";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Trash2 } from 'lucide-react';
 
 const Problem = ({ problem, startTime }: { problem: TrainingProblem; startTime: number }) => {
   const getSolvedStatus = () => {
@@ -12,7 +22,7 @@ const Problem = ({ problem, startTime }: { problem: TrainingProblem; startTime: 
   };
   return (
     <Link
-      className="text-blue-500 hover:underline duration-300"
+      className="text-primary hover:underline duration-300"
       href={problem.url}
       target="_blank"
     >
@@ -29,7 +39,6 @@ const History = ({
   history: Training[];
   deleteTraining: (training: Training) => void;
 }) => {
-
   const onDelete = (training: Training) => {
     if (confirm("Are you sure you want to delete this record?")) {
       deleteTraining(training);
@@ -37,41 +46,42 @@ const History = ({
   };
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      {/* Header */}
-      <div className="w-full flex flex-row items-center py-3 border-b border-gray-200 font-bold">
-        <div className="w-[15%] px-2">Date</div>
-        <div className="w-[5%] px-2">Level</div>
-        <div className="w-[65%] flex justify-around">
-          {history[0].problems.map((p, index) => (
-            <div key={index}>P{index + 1}</div>
-          ))}
-        </div>
-        <div className="w-[10%] px-2">Performance</div>
-        <div className="w-[5%]"></div>
-      </div>
-
-      {/* Rows */}
-      {history.map((training) => (
-        <div 
-          key={training.startTime} 
-          className="w-full flex flex-row items-center py-2 hover:bg-gray-50 border-b border-gray-100"
-        >
-          <div className="w-[15%] px-2">{new Date(training.startTime).toLocaleDateString()}</div>
-          <div className="w-[5%] px-2">{training.level.level}</div>
-          <div className="w-[65%] flex justify-around">
-            {training.problems.map((p) => (
-              <Problem key={p.contestId} problem={p} startTime={training.startTime} />
+    <div className="w-full overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Date</TableHead>
+            <TableHead>Level</TableHead>
+            {history[0].problems.map((_, index) => (
+              <TableHead key={index}>P{index + 1}</TableHead>
             ))}
-          </div>
-          <div className="w-[10%] px-2">{training.performance}</div>
-          <button className="w-[5%]" onClick={() => onDelete(training)}>
-            🗑️
-          </button>
-        </div>
-      ))}
+            <TableHead>Performance</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {history.map((training) => (
+            <TableRow key={training.startTime}>
+              <TableCell>{new Date(training.startTime).toLocaleDateString()}</TableCell>
+              <TableCell>{training.level.level}</TableCell>
+              {training.problems.map((p) => (
+                <TableCell key={p.contestId}>
+                  <Problem problem={p} startTime={training.startTime} />
+                </TableCell>
+              ))}
+              <TableCell>{training.performance}</TableCell>
+              <TableCell>
+                <Button variant="ghost" size="sm" onClick={() => onDelete(training)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 };
 
 export default History;
+

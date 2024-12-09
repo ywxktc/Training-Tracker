@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import useUser from "@/hooks/useUser";
-
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const Settings = () => {
   const [codeforcesHandle, setCodeforcesHandle] = useState("");
   const { updateUser } = useUser();
   const [isUpdating, setIsUpdating] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
   const onChangeCodeforcesHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCodeforcesHandle(e.target.value);
   };
@@ -27,22 +29,22 @@ const Settings = () => {
   };
 
   return (
-    <div className="flex flex-col items-start justify-center gap-2">
-      <div className="flex items-center justify-center gap-4">
-        <input
+    <div className="flex flex-col items-start justify-center gap-4">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full">
+        <Input
           type="text"
-          className="border border-gray-300 rounded-md p-2 outline-none"
+          className="w-full md:w-2/3"
           value={codeforcesHandle}
           onChange={onChangeCodeforcesHandle}
-          placeholder="Codeforces handle"
+          placeholder="Please enter your Codeforces handle"
         />
-        <button
-          className={`bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300 ${isUpdating ? "opacity-50 cursor-not-allowed" : ""}`}
+        <Button
+          className="w-full md:w-1/3"
           onClick={onUpdateUser}
           disabled={isUpdating}
         >
           {isUpdating ? "Updating..." : "Update"}
-        </button>
+        </Button>
       </div>
       {errorMessage && <div className="text-red-500">{errorMessage}</div>}
     </div>

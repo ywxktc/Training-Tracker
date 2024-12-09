@@ -1,28 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import { User } from "@/types/User";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
-const Profile = ({
-  user,
-  logout,
-}: {
-  user: User;
-  logout: () => void;
-}) => {
+const Profile = ({ user, logout }: { user: User; logout: () => void }) => {
   return (
-    <div className="flex items-center justify-center gap-4">
-      <Image
-        className="w-40"
-        src={user?.avatar || "default-avatar.jpg"}
-        alt="avatar"
-        width={150}
-        height={150}
-      />
-      <div className="flex flex-col items-start justify-center gap-2">
-        <div>
-          <span className="font-bold">Username:</span>{" "}
-          {user?.codeforcesHandle}
+    <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+      <Avatar className="w-24 h-24 md:w-40 md:h-40">
+        <AvatarImage src={user?.avatar || "/default-avatar.jpg"} alt="avatar" />
+        <AvatarFallback>{user?.codeforcesHandle?.slice(0, 2).toUpperCase()}</AvatarFallback>
+      </Avatar>
+      <div className="flex flex-col items-center md:items-start justify-center gap-2">
+        <div className="text-lg">
+          <span className="font-bold">Username:</span> {user?.codeforcesHandle}
         </div>
         <div>
           <span className="font-bold">Rating:</span> {user?.rating}
@@ -30,11 +21,9 @@ const Profile = ({
         <div>
           <span className="font-bold">Level:</span> {user?.level.level}
         </div>
-        <button
-          onClick={logout}
-        >
+        <Button onClick={logout} variant="outline" className="mt-2">
           Logout
-        </button>
+        </Button>
       </div>
     </div>
   );
