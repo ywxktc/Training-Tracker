@@ -1,82 +1,55 @@
 import { Training } from "@/types/Training";
-import { TrainingProblem } from "@/types/TrainingProblem";
 
-function getPerformance(training: Training) {
-  const D = training.level.id;
+const getPerformance = (training: Training) => {
+  const level = parseInt(training.level.level);
   
-  // Extract ratings (E, F, G, H)
-  const E = training.problems[0].rating;
-  const F = training.problems[1].rating;
-  const G = training.problems[2].rating;
-  const H = training.problems[3].rating;
+  // Extract problem ratings (EFGH columns)
+  const ratings = training.problems.map(p => p.rating);
+  
+  // Calculate solved times (IJKL columns)
+  // Subtract startTime to get relative solving time
+  const solvedTimes = training.problems.map(p => 
+    p.solvedTime ? (p.solvedTime - training.startTime) / 60000 : null
+  );
 
-  // Extract solved times (I, J, K, L) adjusted by startTime
-  function adjustedTime(p: TrainingProblem) {
-    return p.solvedTime !== null ? (p.solvedTime - training.startTime) : null;
-  }
+  // Helper function to calculate max threshold based on level
+  const getMaxThreshold = (isLastProblem: boolean) => {
+    const base = isLastProblem ? 120 : 135;
+    const max = isLastProblem ? 180 : 195;
+    return Math.max(base, Math.min(max, base + 2.5 * (level - 52)));
+  };
 
-  const I = adjustedTime(training.problems[0]);
-  const J = adjustedTime(training.problems[1]);
-  const K = adjustedTime(training.problems[2]);
-  const L = adjustedTime(training.problems[3]);
-
-  // Define the scale functions
-  function scale1(D: number) {
-    // scale1 = MAX(135, MIN(195, 135 + 2.5*(D-52)))
-    const val = 135 + 2.5 * (D - 52);
-    return Math.max(135, Math.min(195, val));
-  }
-
-  function scale2(D: number) {
-    // scale2 = MAX(120, MIN(180, 120 + 2.5*(D-52)))
-    const val = 120 + 2.5 * (D - 52);
-    return Math.max(120, Math.min(180, val));
-  }
-
-  // Compute performance based on the provided logic
+  // Main calculation logic following the Excel formula
   let performance;
-  if (L === null) {
-    // L blank
-    if (K === null) {
-      // K blank
-      if (J === null) {
-        // J blank
-        if (I === null) {
-          // I blank
-          // E20 - 50
-          performance = E - 50;
+
+  if (solvedTimes[3] === null) { // L column is blank
+    if (solvedTimes[2] === null) { // K column is blank
+      if (solvedTimes[1] === null) { // J column is blank
+        if (solvedTimes[0] === null) { // I column is blank
+          performance = ratings[0] - 50;
         } else {
-          // I not blank
-          // (I/scale1)*E + ((scale1 - I)/scale1)*F
-          const sc1 = scale1(D);
-          performance = (I / sc1) * E + ((sc1 - I) / sc1) * F;
+          const maxThreshold = getMaxThreshold(false);
+          performance = (solvedTimes[0] / maxThreshold) * ratings[0] + 
+                       ((maxThreshold - solvedTimes[0]) / maxThreshold) * ratings[1];
         }
       } else {
-        // J not blank
-        // (J/scale1)*F + ((scale1 - J)/scale1)*G
-        const sc1 = scale1(D);
-        performance = (J / sc1) * F + ((sc1 - J) / sc1) * G;
+        const maxThreshold = getMaxThreshold(false);
+        performance = (solvedTimes[1] / maxThreshold) * ratings[1] + 
+                     ((maxThreshold - solvedTimes[1]) / maxThreshold) * ratings[2];
       }
     } else {
-      // K not blank
-      // (K/scale1)*G + ((scale1 - K)/scale1)*H
-      const sc1 = scale1(D);
-      performance = (K / sc1) * G + ((sc1 - K) / sc1) * H;
+      const maxThreshold = getMaxThreshold(false);
+      performance = (solvedTimes[2] / maxThreshold) * ratings[2] + 
+                   ((maxThreshold - solvedTimes[2]) / maxThreshold) * ratings[3];
     }
   } else {
-    // L not blank
-    // (L/scale2)*H + ((scale2 - L)/scale2)*(H + 400) + MOD(D-1,4)*12.5
-    const sc2 = scale2(D);
-    const modVal = ((D - 1) % 4 + 4) % 4; // ensure positive mod
-    performance = (L / sc2) * H 
-                + ((sc2 - L) / sc2) * (H + 400) 
-                + modVal * 12.5;
+    const maxThreshold = getMaxThreshold(true);
+    performance = (solvedTimes[3] / maxThreshold) * ratings[3] + 
+                 ((maxThreshold - solvedTimes[3]) / maxThreshold) * (ratings[3] + 400) + 
+                 ((level - 1) % 4) * 12.5;
   }
 
-  // Round the result
-  performance = Math.round(performance);
-
-  return performance;
+  return Math.round(performance);
 }
 
-export { getPerformance };
+export default getPerformance;
