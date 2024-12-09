@@ -120,23 +120,25 @@ const Trainer = ({
           </>
         ) : (
           training && (
-            <div className="flex flex-row gap-4 items-center">
+            <div className="flex flex-col gap-4 items-center">
+              <CountDown
+                startTime={training.startTime}
+                endTime={training.endTime}
+              />
+              <div className="flex flex-row gap-4 items-center">
               <button
                 className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
                 onClick={onFinishTraining}
               >
                 Finish
               </button>
-              <CountDown
-                startTime={training.startTime}
-                endTime={training.endTime}
-              />
               <button
                 className="w-fit bg-red-500 hover:bg-red-700 text-white rounded-md p-2 transition-colors duration-300"
                 onClick={onStopTraining}
               >
                 Stop
-              </button>
+                </button>
+              </div>
             </div>
           )
         )}
