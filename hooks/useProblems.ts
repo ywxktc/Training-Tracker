@@ -73,6 +73,7 @@ const useProblems = (user: User | null | undefined) => {
     const solvedProblemIds = new Set(
       solvedProblems?.map((p) => `${p.contestId}_${p.index}`) ?? []
     );
+
   
     const unsolvedProblems = allProblems?.filter(
       (problem) => !solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
@@ -80,10 +81,12 @@ const useProblems = (user: User | null | undefined) => {
   
     const newProblemPools = ratings.map((rating) => ({
       rating,
-      solved: unsolvedProblems?.filter((problem) => problem.rating === rating) ?? [],
+      solved: solvedProblems?.filter((problem) => problem.rating === rating) ?? [],
       unsolved: unsolvedProblems?.filter((problem) => problem.rating === rating) ?? [],
     }));
-  
+
+    console.log(newProblemPools);
+
     setProblemPools(newProblemPools);
   }, [user, allProblems, solvedProblems, isLoadingAll]);
 
