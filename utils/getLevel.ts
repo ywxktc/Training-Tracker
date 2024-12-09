@@ -7,7 +7,16 @@ const getLevelByRating = (rating: number) => {
 };
 
 const getLevel = (newLevel: number) => {
-  return level.find((level: Level) => +level.level === newLevel);
+  const maxLevel = level.length;
+  const minLevel = 1;
+  if (newLevel < minLevel) {
+    return level[0];
+  }
+  if (newLevel > maxLevel) {
+    return level[maxLevel - 1];
+  }
+  const res = level.find((level: Level) => +level.level === newLevel);
+  return res ? res : level[0];
 };
 
 export { getLevelByRating, getLevel };

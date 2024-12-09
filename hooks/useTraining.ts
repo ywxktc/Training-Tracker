@@ -112,7 +112,7 @@ const useTraining = () => {
     updateUserLevel({ delta });
 
     router.push("/statistics");
-  }, [training, addTraining, router, refreshSolvedProblems]);
+  }, [training, addTraining, router, refreshSolvedProblems, updateUserLevel]);
 
   // Redirect if no user
   useEffect(() => {

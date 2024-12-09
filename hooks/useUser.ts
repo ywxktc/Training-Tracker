@@ -57,9 +57,28 @@ const useUser = () => {
     }
   };
 
-  const updateUserLevel = async ({ delta }: { delta: number }) => {
+  const changeUserLevel = async (newLevelNumber: number) => {
     if (!user) {
-      return;
+      return ErrorResponse("User not found");
+    }
+
+    const originalLevel = user.level;
+    const newLevel = getLevel(newLevelNumber);
+
+    try {
+      await mutate({ ...user, level: newLevel }, { revalidate: false });
+      return SuccessResponse("User level updated successfully");
+    } catch (error) {
+      await mutate({ ...user, level: originalLevel }, { revalidate: false });
+      console.error("Error updating user level:", error);
+      return ErrorResponse("Failed to update user level");
+    }
+  };
+
+  const updateUserLevel = async ({ delta }: { delta: number }) => {
+    // update user level after training
+    if (!user) {
+      return ErrorResponse("User not found");
     }
 
     const newLevel = getLevel(+user.level.level + delta);
@@ -72,9 +91,10 @@ const useUser = () => {
       await mutate({ ...user, level: newLevel }, { revalidate: false });
       return SuccessResponse("User level updated successfully");
     } catch (error) {
+      console.error("Error updating user level:", error);
       return ErrorResponse("Failed to update user level");
     }
-  }
+  };
 
   const logout = () => {
     mutate(null, { revalidate: false });
@@ -88,6 +108,7 @@ const useUser = () => {
 
     updateUser,
     updateUserLevel,
+    changeUserLevel,
     logout,
   };
 };
