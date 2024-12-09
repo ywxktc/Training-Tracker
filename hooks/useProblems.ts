@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import useSWR from "swr";
-import { CodeforcesProblem } from "@/types/Codeforces";
+import { CodeforcesProblem, ProblemTag } from "@/types/Codeforces";
 import getAllProblems from "@/utils/codeforces/getAllProblems";
 import getSolvedProblems from "@/utils/codeforces/getSolvedProblems";
 import { User } from "@/types/User";
@@ -113,17 +113,35 @@ const useProblems = (user: User | null | undefined) => {
     }
   };
 
-  const getRandomProblems = () => {
+  const getRandomProblems = (tags: ProblemTag[]) => {
     if (!user || problemPools.length === 0) {
       return;
     }
 
+    console.log(tags);
+
+    setIsLoading(true);
+
     const newProblems = problemPools.map((pool) => {
       let problem = null;
-      if (pool.unsolved.length > 0) {
-        problem = pool.unsolved[Math.floor(Math.random() * pool.unsolved.length)];
+
+      let newPool = pool;
+      if (tags.length > 0) {
+        newPool = {
+          ...pool,
+          solved: pool.solved.filter(
+            (problem) => tags.some((tag: ProblemTag) => problem.tags.includes(tag.value))
+          ),
+          unsolved: pool.unsolved.filter(
+            (problem) => tags.some((tag: ProblemTag) => problem.tags.includes(tag.value))
+          ),
+        };
+      }
+
+      if (newPool.unsolved.length > 0) {
+        problem = newPool.unsolved[Math.floor(Math.random() * newPool.unsolved.length)];
       } else {
-        problem = pool.solved[Math.floor(Math.random() * pool.solved.length)];
+        problem = newPool.solved[Math.floor(Math.random() * newPool.solved.length)];
       }
       return {
         ...problem,
@@ -132,8 +150,10 @@ const useProblems = (user: User | null | undefined) => {
       };
     });
 
+    setIsLoading(false);
     return newProblems;
   };
+
 
   return {
     allProblems: allProblems ?? [],

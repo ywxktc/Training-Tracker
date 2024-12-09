@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Brute Force",
+    "value": "brute force"
+  },
+  {
+    "name": "Math",
+    "value": "math"
+  },
+  {
+    "name": "Combinatorics",
+    "value": "combinatorics"
+  },
+  {
+    "name": "Constructives",
+    "value": "constructives"
+  },
+  {
+    "name": "Probabilities",
+    "value": "probabilities"
+  },
+  {
+    "name": "Graphs",
+    "value": "graphs"
+  },
+  {
+    "name": "Sortings",
+    "value": "sortings"
+  },
+  {
+    "name": "Bitmasks",
+    "value": "bitmasks"
+  },
+  {
+    "name": "Data Structures",
+    "value": "data structures"
+  },
+  {
+    "name": "Implementation",
+    "value": "implementation"
+  },
+  {
+    "name": "Trees",
+    "value": "trees"
+  },
+  {
+    "name": "Number Theory",
+    "value": "number theory"
+  }
+]

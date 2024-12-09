@@ -4,6 +4,7 @@ import useUser from "@/hooks/useUser";
 import useProblems from "@/hooks/useProblems";
 import { TrainingProblem } from "@/types/TrainingProblem";
 import { Training } from "@/types/Training";
+import { ProblemTag } from "@/types/Codeforces";
 import useHistory from "@/hooks/useHistory";
 
 const TRAINING_STORAGE_KEY = "training-tracker-training";
@@ -212,8 +213,8 @@ const useTraining = () => {
     localStorage.removeItem(TRAINING_STORAGE_KEY);
   };
 
-  const generateProblems = () => {
-    const newProblems = getRandomProblems();
+  const generateProblems = (tags: ProblemTag[]) => {
+    const newProblems = getRandomProblems(tags);
     if (newProblems) {
       setProblems(newProblems);
     }

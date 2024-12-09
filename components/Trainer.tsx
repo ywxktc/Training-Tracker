@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TrainingProblem } from "@/types/TrainingProblem";
 import { Training } from "@/types/Training";
 import CountDown from "@/components/CountDown";
+import { ProblemTag } from "@/types/Codeforces";
 
 const ProblemLink = ({
   problem,
@@ -44,15 +45,17 @@ const Trainer = ({
   stopTraining,
   refreshProblemStatus,
   finishTraining,
+  selectedTags,
 }: {
   isTraining: boolean;
   training: Training | null;
   problems: TrainingProblem[] | null;
-  generateProblems: () => void;
+  generateProblems: (tags: ProblemTag[]) => void;
   startTraining: () => void;
   stopTraining: () => void;
   refreshProblemStatus: () => void;
   finishTraining: () => void;
+  selectedTags: ProblemTag[];
 }) => {
   const onFinishTraining = () => {
     if (confirm("Are you sure to finish the training?")) {
@@ -103,7 +106,7 @@ const Trainer = ({
           <>
             <button
               className="w-fit bg-black hover:bg-gray-800 text-white rounded-md p-2 transition-colors duration-300"
-              onClick={generateProblems}
+              onClick={() => generateProblems(selectedTags)}
             >
               {problems && problems.length > 0
                 ? "Regenerate"

@@ -84,8 +84,10 @@ type CodeforcesSubmission = {
   points: number;
 };
 
-export type { CodeforcesProblem, CodeforcesSubmission };
+type ProblemTag = {
+  name: string;
+  value: string;
+};
 
-
-
+export type { CodeforcesProblem, CodeforcesSubmission, ProblemTag };
 

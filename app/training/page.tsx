@@ -3,11 +3,19 @@
 import useUser from "@/hooks/useUser";
 import useTraining from "@/hooks/useTraining";
 import Trainer from "@/components/Trainer";
+import TagSelector from "@/components/TagSelector";
 import Loader from "@/components/Loader";
 import Error from "@/components/Error";
-
+import useTags from "@/hooks/useTags";
 const Training = () => {
   const { user } = useUser();
+
+  const {
+    allTags,
+    selectedTags,
+    onTagClick,
+    onClearTags,
+  } = useTags();
 
   const {
     startTraining,
@@ -45,6 +53,12 @@ const Training = () => {
           </div>
         </div>
       </div>
+      <TagSelector
+        allTags={allTags}
+        selectedTags={selectedTags}
+        onTagClick={onTagClick}
+        onClearTags={onClearTags}
+      />
       <div className="w-full flex flex-row">
         <div className="w-1/4 text-left">
           <span className="font-bold">P1:</span> {user?.level.P1}
@@ -68,6 +82,7 @@ const Training = () => {
         stopTraining={stopTraining}
         refreshProblemStatus={refreshProblemStatus}
         finishTraining={finishTraining}
+        selectedTags={selectedTags}
       />
     </div>
   );
