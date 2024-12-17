@@ -8,7 +8,10 @@ const getAllProblems = async (): Promise<Response<CodeforcesProblem[]>> => {
     if (data.status !== "OK") {
       return ErrorResponse("Failed to fetch problems");
     }
-    return SuccessResponse(data.result.problems);
+    const problems = data.result.problems.filter(
+      (problem: CodeforcesProblem) => problem.contestId >= 700
+    );
+    return SuccessResponse(problems);
   } catch (error) {
     return ErrorResponse((error as Error).message);
   }
