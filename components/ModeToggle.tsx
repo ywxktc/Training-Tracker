@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -14,6 +15,10 @@ import {
 
 const ModeToggle = () => {
   const { setTheme } = useTheme();
+
+  useEffect(() => {
+    setTheme("system");
+  }, [setTheme]);
 
   return (
     <DropdownMenu>
