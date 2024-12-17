@@ -85,8 +85,6 @@ const useProblems = (user: User | null | undefined) => {
       unsolved: unsolvedProblems?.filter((problem) => problem.rating === rating) ?? [],
     }));
 
-    console.log(newProblemPools);
-
     setProblemPools(newProblemPools);
   }, [user, allProblems, solvedProblems, isLoadingAll]);
 

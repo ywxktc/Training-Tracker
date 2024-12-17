@@ -6,19 +6,25 @@ import { TrainingProblem } from "@/types/TrainingProblem";
 import { Training } from "@/types/Training";
 import { ProblemTag } from "@/types/Codeforces";
 import useHistory from "@/hooks/useHistory";
+import useUpsolvedProblems from "@/hooks/useUpsolvedProblems";
 
 const TRAINING_STORAGE_KEY = "training-tracker-training";
 
 const useTraining = () => {
   const router = useRouter();
-  const { user, isLoading: isUserLoading, updateUserLevel } = useUser();
-  const { addTraining } = useHistory();
+  const {
+    user,
+    isLoading: isUserLoading,
+    updateUserLevel,
+  } = useUser();
   const {
     solvedProblems,
     isLoading: isProblemsLoading,
     refreshSolvedProblems,
     getRandomProblems,
   } = useProblems(user);
+  const { addTraining } = useHistory();
+  const { addUpsolvedProblems } = useUpsolvedProblems();
 
 
   const [problems, setProblems] = useState<TrainingProblem[]>([]);
@@ -111,8 +117,13 @@ const useTraining = () => {
     const delta = updatedProblems.every((p) => p.solvedTime) ? 1 : -1;
     updateUserLevel({ delta });
 
+    // Add unsolved problems to upsolved problems list
+    const unsolvedProblems = updatedProblems.filter(p => !p.solvedTime);
+    addUpsolvedProblems(unsolvedProblems);
+
     router.push("/statistics");
-  }, [training, addTraining, router, refreshSolvedProblems, updateUserLevel]);
+
+  }, [training, addTraining, router, refreshSolvedProblems, updateUserLevel, addUpsolvedProblems]);
 
   // Redirect if no user
   useEffect(() => {
