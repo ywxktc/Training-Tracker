@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import useSWR from "swr";
 import { TrainingProblem } from "@/types/TrainingProblem";
 import { SuccessResponse, ErrorResponse } from "@/types/Response";
@@ -30,6 +30,35 @@ const useUpsolvedProblems = () => {
 
   // make sure the data is an array
   const upsolvedProblems = useMemo(() => data ?? [], [data]);
+
+  const refreshUpsolvedProblems = useCallback(async () => {
+    if (upsolvedProblems?.length === 0) {
+      return;
+    }
+    const newUpsolvedProblems = upsolvedProblems.map((problem) => {
+      const solvedProblem = solvedProblems.find(
+        (p) => p.contestId === problem.contestId && p.index === problem.index
+      );
+      if (solvedProblem && !problem.solvedTime) {
+        return {
+          ...problem,
+          solvedTime: new Date().getTime(),
+        };
+      }
+      return problem;
+    });
+    
+    if (JSON.stringify(newUpsolvedProblems) !== JSON.stringify(upsolvedProblems)) {
+      await mutate(newUpsolvedProblems, { revalidate: false });
+    }
+  }, [upsolvedProblems, solvedProblems, mutate]);
+
+  useEffect(() => {
+    if (solvedProblems?.length > 0) {
+      refreshUpsolvedProblems();
+    }
+  }, [solvedProblems, refreshUpsolvedProblems]);
+
 
   useEffect(() => {
     if (upsolvedProblems) {
@@ -68,21 +97,9 @@ const useUpsolvedProblems = () => {
     }
   };
 
-  const refreshUpsolvedProblems = async () => {
+  const onRefreshUpsolvedProblems = async () => {
     await refreshSolvedProblems();
-    const newUpsolvedProblems = upsolvedProblems.map((problem) => {
-      const solvedProblem = solvedProblems.find(
-        (p) => p.contestId === problem.contestId && p.index === problem.index
-      );
-      if (solvedProblem) {
-        return {
-          ...problem,
-          solvedTime: new Date().getTime(),
-        };
-      }
-      return problem;
-    });
-    await mutate(newUpsolvedProblems, { revalidate: false });
+    await refreshUpsolvedProblems();
   };
 
   return {
@@ -92,6 +109,7 @@ const useUpsolvedProblems = () => {
     addUpsolvedProblems,
     deleteUpsolvedProblem,
     refreshUpsolvedProblems,
+    onRefreshUpsolvedProblems,
   };
 };
 

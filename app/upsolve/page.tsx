@@ -7,7 +7,13 @@ import Error from "@/components/Error";
 import UpsolvedProblemsList from "@/components/UpsolvedProblemsList";
 
 const Upsolve = () => {
-  const { upsolvedProblems, isLoading, error, deleteUpsolvedProblem, refreshUpsolvedProblems } = useUpsolvedProblems();
+  const {
+    upsolvedProblems,
+    isLoading,
+    error,
+    deleteUpsolvedProblem,
+    onRefreshUpsolvedProblems,
+  } = useUpsolvedProblems();
 
   if (isLoading) {
     return <Loader />;
@@ -32,7 +38,7 @@ const Upsolve = () => {
       <UpsolvedProblemsList
         upsolvedProblems={upsolvedProblems}
         onDelete={onDelete}
-        onRefresh={refreshUpsolvedProblems}
+        onRefresh={onRefreshUpsolvedProblems}
       />
     </div>
   );
