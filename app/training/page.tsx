@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import useUser from "@/hooks/useUser";
 import useTraining from "@/hooks/useTraining";
 import Trainer from "@/components/Trainer";
@@ -8,6 +10,7 @@ import Loader from "@/components/Loader";
 import Error from "@/components/Error";
 import useTags from "@/hooks/useTags";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const Training = () => {
   const { user } = useUser();
@@ -23,6 +26,7 @@ const Training = () => {
     finishTraining,
     generateProblems,
   } = useTraining();
+  const [showRatings, setShowRatings] = useState(false);
 
   if (isLoading) {
     return <Loader />;
@@ -49,11 +53,42 @@ const Training = () => {
           onTagClick={onTagClick}
           onClearTags={onClearTags}
         />
-        <div className="flex flex-wrap justify-between gap-4">
-          <div><span className="font-bold">P1:</span> {user?.level.P1}</div>
-          <div><span className="font-bold">P2:</span> {user?.level.P2}</div>
-          <div><span className="font-bold">P3:</span> {user?.level.P3}</div>
-          <div><span className="font-bold">P4:</span> {user?.level.P4}</div>
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowRatings(!showRatings)}
+            className="w-fit"
+          >
+            {showRatings ? "Hide Ratings" : "Show Ratings"}
+          </Button>
+          
+          <div className="flex flex-wrap gap-4 p-4 rounded-lg justify-between">
+            <div>
+              <span className="font-bold">P1:</span>{" "}
+              <span className={!showRatings ? "blur-sm select-none" : ""}>
+                {user?.level.P1}
+              </span>
+            </div>
+            <div>
+              <span className="font-bold">P2:</span>{" "}
+              <span className={!showRatings ? "blur-sm select-none" : ""}>
+                {user?.level.P2}
+              </span>
+            </div>
+            <div>
+              <span className="font-bold">P3:</span>{" "}
+              <span className={!showRatings ? "blur-sm select-none" : ""}>
+                {user?.level.P3}
+              </span>
+            </div>
+            <div>
+              <span className="font-bold">P4:</span>{" "}
+              <span className={!showRatings ? "blur-sm select-none" : ""}>
+                {user?.level.P4}
+              </span>
+            </div>
+          </div>
         </div>
         <Trainer
           isTraining={isTraining}
