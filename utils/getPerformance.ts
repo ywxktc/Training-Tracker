@@ -50,6 +50,6 @@ const getPerformance = (training: Training) => {
   }
 
   return Math.round(performance);
-}
+};
 
 export default getPerformance;

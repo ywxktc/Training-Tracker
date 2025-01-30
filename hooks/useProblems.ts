@@ -5,6 +5,7 @@ import getAllProblems from "@/utils/codeforces/getAllProblems";
 import getSolvedProblems from "@/utils/codeforces/getSolvedProblems";
 import { User } from "@/types/User";
 
+
 const PROBLEMS_CACHE_KEY = "codeforces-all-problems";
 const SOLVED_PROBLEMS_CACHE_KEY = (handle: string) =>
   `codeforces-solved-${handle}`;
@@ -114,15 +115,13 @@ const useProblems = (user: User | null | undefined) => {
     }
   };
 
-  const getRandomProblems = (tags: ProblemTag[]) => {
+  const getRandomProblems = (tags: ProblemTag[], lb: number, ub: number) => {
     if (!user || problemPools.length === 0) {
       return;
     }
 
-    console.log(tags);
-
     setIsLoading(true);
-
+    const alreadyChosen = new Set<string>();
     const newProblems = problemPools.map((pool) => {
       let problem = null;
 
@@ -139,10 +138,60 @@ const useProblems = (user: User | null | undefined) => {
         };
       }
 
+      const newPool2 = {
+        rating: newPool.rating,
+        solved: {
+          inrange: [] as CodeforcesProblem[],
+          outsiderange: [] as CodeforcesProblem[],
+        },
+        unsolved: {
+          inrange: [] as CodeforcesProblem[],
+          outsiderange: [] as CodeforcesProblem[],
+        },
+      };
+
+      newPool2.solved.inrange = newPool.solved.filter((problem) => {
+        const id = problem.contestId;
+        return (id >= lb && id <= ub);
+      });
+      newPool2.solved.outsiderange = newPool.solved.filter((problem) => {
+        const id = problem.contestId;
+        return (id < lb || id > ub);
+      });
+
+      newPool2.unsolved.inrange = newPool.unsolved.filter((problem) => {
+        const id = problem.contestId;
+        return (id >= lb && id <= ub);
+      });
+      newPool2.unsolved.outsiderange = newPool.unsolved.filter((problem) => {
+        const id = problem.contestId;
+        return (id < lb || id > ub);
+      });
+      
+      const chooseFrom = (problist: CodeforcesProblem[]) => {
+        let tmp = problist[Math.floor(Math.random() * problist.length)];
+        let str = `${tmp.contestId}_${tmp.index}`;
+        while (alreadyChosen.has(str)) {
+          tmp = problist[Math.floor(Math.random() * problist.length)];
+          str = `${tmp.contestId}_${tmp.index}`;
+        }
+        alreadyChosen.add(str);
+        
+        return tmp;
+      };
+
       if (newPool.unsolved.length > 0) {
-        problem = newPool.unsolved[Math.floor(Math.random() * newPool.unsolved.length)];
+        if(newPool2.unsolved.inrange.length > 0) {
+          problem = chooseFrom(newPool2.unsolved.inrange);
+        } else {
+          problem = chooseFrom(newPool2.unsolved.outsiderange);
+        }
       } else {
-        problem = newPool.solved[Math.floor(Math.random() * newPool.solved.length)];
+        if(newPool2.solved.inrange.length > 0) {
+          problem = chooseFrom(newPool2.solved.inrange);
+        } else {
+          problem = chooseFrom(newPool2.solved.outsiderange);
+        }
       }
       return {
         ...problem,
@@ -167,3 +216,4 @@ const useProblems = (user: User | null | undefined) => {
 };
 
 export default useProblems;
+
