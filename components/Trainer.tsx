@@ -47,16 +47,20 @@ const Trainer = ({
   refreshProblemStatus,
   finishTraining,
   selectedTags,
+  lb,
+  ub,
 }: {
   isTraining: boolean;
   training: Training | null;
   problems: TrainingProblem[] | null;
-  generateProblems: (tags: ProblemTag[]) => void;
+  generateProblems: (tags: ProblemTag[], lb: number, ub: number) => void;
   startTraining: () => void;
   stopTraining: () => void;
   refreshProblemStatus: () => void;
   finishTraining: () => void;
   selectedTags: ProblemTag[];
+  lb: number;
+  ub: number;
 }) => {
   const onFinishTraining = () => {
     if (confirm("Are you sure to finish the training?")) {
@@ -93,7 +97,7 @@ const Trainer = ({
           {!isTraining ? (
             <>
               <Button
-                onClick={() => generateProblems(selectedTags)}
+                onClick={() => generateProblems(selectedTags,lb,ub)}
               >
                 {problems && problems.length > 0 ? "Regenerate" : "Generate Problems"}
               </Button>

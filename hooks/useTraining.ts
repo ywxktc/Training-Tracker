@@ -224,8 +224,8 @@ const useTraining = () => {
     localStorage.removeItem(TRAINING_STORAGE_KEY);
   };
 
-  const generateProblems = (tags: ProblemTag[]) => {
-    const newProblems = getRandomProblems(tags);
+  const generateProblems = (tags: ProblemTag[], lb: number, ub: number) => {
+    const newProblems = getRandomProblems(tags, lb, ub);
     if (newProblems) {
       setProblems(newProblems);
     }

@@ -9,8 +9,10 @@ import TagSelector from "@/components/TagSelector";
 import Loader from "@/components/Loader";
 import Error from "@/components/Error";
 import useTags from "@/hooks/useTags";
+import useBounds from "@/hooks/useBounds";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Textboxpair } from "@/components/ui/textboxpair";
 
 const Training = () => {
   const { user } = useUser();
@@ -26,6 +28,11 @@ const Training = () => {
     finishTraining,
     generateProblems,
   } = useTraining();
+  const { firstInput,
+    secondInput,
+    onFirstInputChange,
+    onSecondInputChange
+  } = useBounds();
   const [showRatings, setShowRatings] = useState(false);
 
   if (isLoading) {
@@ -54,15 +61,18 @@ const Training = () => {
           onClearTags={onClearTags}
         />
         <div className="flex flex-col gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowRatings(!showRatings)}
-            className="w-fit"
-          >
-            {showRatings ? "Hide Ratings" : "Show Ratings"}
-          </Button>
-          
+          <div className="flex place-content-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowRatings(!showRatings)}
+              className="w-fit">
+              {showRatings ? "Hide Ratings" : "Show Ratings"}
+            </Button>
+            <Textboxpair onFirstInputChange={onFirstInputChange} onSecondInputChange={onSecondInputChange}></Textboxpair>
+          </div>
+
+
           <div className="flex flex-wrap gap-4 p-4 rounded-lg justify-between">
             <div>
               <span className="font-bold">P1:</span>{" "}
@@ -100,6 +110,8 @@ const Training = () => {
           refreshProblemStatus={refreshProblemStatus}
           finishTraining={finishTraining}
           selectedTags={selectedTags}
+          lb={firstInput}
+          ub={secondInput}
         />
       </CardContent>
     </Card>
