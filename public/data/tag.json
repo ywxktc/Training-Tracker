@@ -1,50 +1,38 @@
 [
-  {
-    "name": "Brute Force",
-    "value": "brute force"
-  },
-  {
-    "name": "Math",
-    "value": "math"
-  },
-  {
-    "name": "Combinatorics",
-    "value": "combinatorics"
-  },
-  {
-    "name": "Constructives",
-    "value": "constructives"
-  },
-  {
-    "name": "Probabilities",
-    "value": "probabilities"
-  },
-  {
-    "name": "Graphs",
-    "value": "graphs"
-  },
-  {
-    "name": "Sortings",
-    "value": "sortings"
-  },
-  {
-    "name": "Bitmasks",
-    "value": "bitmasks"
-  },
-  {
-    "name": "Data Structures",
-    "value": "data structures"
-  },
-  {
-    "name": "Implementation",
-    "value": "implementation"
-  },
-  {
-    "name": "Trees",
-    "value": "trees"
-  },
-  {
-    "name": "Number Theory",
-    "value": "number theory"
-  }
+  { "name": "2-Sat", "value": "2-sat" },
+  { "name": "Binary Search", "value": "binary search" },
+  { "name": "Bitmasks", "value": "bitmasks" },
+  { "name": "Brute Force", "value": "brute force" },
+  { "name": "Chinese Remainder Theorem", "value": "chinese remainder theorem" },
+  { "name": "Combinatorics", "value": "combinatorics" },
+  { "name": "Constructive Algorithms", "value": "constructive algorithms" },
+  { "name": "Data Structures", "value": "data structures" },
+  { "name": "Dfs And Similar", "value": "dfs and similar" },
+  { "name": "Divide And Conquer", "value": "divide and conquer" },
+  { "name": "Dp", "value": "dp" },
+  { "name": "Dsu", "value": "dsu" },
+  { "name": "Expression Parsing", "value": "expression parsing" },
+  { "name": "Fft", "value": "fft" },
+  { "name": "Flows", "value": "flows" },
+  { "name": "Games", "value": "games" },
+  { "name": "Geometry", "value": "geometry" },
+  { "name": "Graph Matchings", "value": "graph matchings" },
+  { "name": "Graphs", "value": "graphs" },
+  { "name": "Greedy", "value": "greedy" },
+  { "name": "Hashing", "value": "hashing" },
+  { "name": "Implementation", "value": "implementation" },
+  { "name": "Interactive", "value": "interactive" },
+  { "name": "Math", "value": "math" },
+  { "name": "Matrices", "value": "matrices" },
+  { "name": "Meet-In-The-Middle", "value": "meet-in-the-middle" },
+  { "name": "Number Theory", "value": "number theory" },
+  { "name": "Probabilities", "value": "probabilities" },
+  { "name": "Schedules", "value": "schedules" },
+  { "name": "Shortest Paths", "value": "shortest paths" },
+  { "name": "Sortings", "value": "sortings" },
+  { "name": "String Suffix Structures", "value": "string suffix structures" },
+  { "name": "Strings", "value": "strings" },
+  { "name": "Ternary Search", "value": "ternary search" },
+  { "name": "Trees", "value": "trees" },
+  { "name": "Two Pointers", "value": "two pointers" }
 ]
