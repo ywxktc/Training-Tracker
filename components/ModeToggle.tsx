@@ -18,7 +18,7 @@ const ModeToggle = () => {
 
   useEffect(() => {
     setTheme("system");
-  }, []);
+  }, [setTheme]);
 
   return (
     <DropdownMenu>

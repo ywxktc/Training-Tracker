@@ -29,6 +29,28 @@ const useUser = () => {
   );
 
   useEffect(() => {
+    const fetchLatestUser = async () => {
+      if (!user?.codeforcesHandle) return;
+      const res = await getUser(user.codeforcesHandle);
+      if (!res.success) return;
+      const profile = res.data;
+      if (
+        profile.rating !== user.rating ||
+        profile.avatar !== user.avatar
+      ) {
+        const newUser = {
+          codeforcesHandle: profile.handle as string,
+          avatar: profile.avatar as string,
+          rating: profile.rating as number,
+          level: getLevelByRating(profile.rating),
+        };
+        await mutate(newUser, { revalidate: false });
+      }
+    };
+    fetchLatestUser();
+  }, [user?.codeforcesHandle]);
+
+  useEffect(() => {
     if (user) {
       localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
     }
