@@ -40,6 +40,11 @@ const Statistics = () => {
     a.click();
   };
 
+  // 将 history 按时间升序排序，用于图表
+  const sortedHistoryForChart = [...history].sort(
+    (a, b) => a.startTime - b.startTime
+  );
+
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -57,9 +62,7 @@ const Statistics = () => {
               >
                 JSON
               </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                CSV
-              </DropdownMenuItem>
+              <DropdownMenuItem disabled>CSV</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="destructive" onClick={onClearHistory}>
@@ -71,12 +74,14 @@ const Statistics = () => {
         {history && history.length > 0 ? (
           <>
             <div className="w-full mb-6">
-              <ProgressChart history={history} />
+              <ProgressChart history={sortedHistoryForChart} />
             </div>
             <History history={history} deleteTraining={deleteTraining} />
           </>
         ) : (
-          <div className="text-center py-4 text-muted-foreground">No training history</div>
+          <div className="text-center py-4 text-muted-foreground">
+            No training history
+          </div>
         )}
       </CardContent>
     </Card>

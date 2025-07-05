@@ -10,6 +10,7 @@ const useHistory = () => {
   const router = useRouter();
   const { user, isLoading: isUserLoading } = useUser();
   const [history, setHistory] = useState<Training[]>([]);
+
   // Redirect if no user
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -19,31 +20,33 @@ const useHistory = () => {
 
   // Load history from localStorage
   useEffect(() => {
-    const history = localStorage.getItem(HISTORY_STORAGE_KEY);
-    if (history) {
-      setHistory(JSON.parse(history));
+    const historyStr = localStorage.getItem(HISTORY_STORAGE_KEY);
+    if (historyStr) {
+      const loadedHistory: Training[] = JSON.parse(historyStr);
+      loadedHistory.sort((a, b) => b.startTime - a.startTime); // 降序排序
+      setHistory(loadedHistory);
     }
   }, []);
 
   const addTraining = (training: Training) => {
     const performance = getPerformance(training);
-
     const newTraining = { ...training, performance };
 
-    setHistory((prev) => [...prev, newTraining]);
-
-    localStorage.setItem(
-      HISTORY_STORAGE_KEY,
-      JSON.stringify([...history, newTraining])
+    const updatedHistory = [...history, newTraining].sort(
+      (a, b) => b.startTime - a.startTime
     );
+
+    setHistory(updatedHistory);
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
   };
 
   const deleteTraining = (training: Training) => {
-    setHistory((prev) => prev.filter((t) => t.startTime !== training.startTime));
-    localStorage.setItem(
-      HISTORY_STORAGE_KEY,
-      JSON.stringify(history.filter((t) => t.startTime !== training.startTime))
-    );
+    const updatedHistory = history
+      .filter((t) => t.startTime !== training.startTime)
+      .sort((a, b) => b.startTime - a.startTime);
+
+    setHistory(updatedHistory);
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
   };
 
   const clearHistory = () => {
@@ -54,7 +57,6 @@ const useHistory = () => {
   return {
     history,
     isLoading: isUserLoading,
-
     addTraining,
     deleteTraining,
     clearHistory,
