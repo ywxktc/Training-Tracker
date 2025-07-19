@@ -168,7 +168,11 @@ const useProblems = (user: User | null | undefined) => {
         return (id < lb || id > ub);
       });
       
-      const chooseFrom = (problist: CodeforcesProblem[]) => {
+      const chooseFrom = (problist: CodeforcesProblem[]): CodeforcesProblem | null => {
+        if (problist.length === 0) {
+          return null;
+        }
+        
         let tmp = problist[Math.floor(Math.random() * problist.length)];
         let str = `${tmp.contestId}_${tmp.index}`;
         while (alreadyChosen.has(str)) {
@@ -183,25 +187,27 @@ const useProblems = (user: User | null | undefined) => {
       if (newPool.unsolved.length > 0) {
         if(newPool2.unsolved.inrange.length > 0) {
           problem = chooseFrom(newPool2.unsolved.inrange);
-        } else {
+        } else if(newPool2.unsolved.outsiderange.length > 0) {
           problem = chooseFrom(newPool2.unsolved.outsiderange);
         }
-      } else {
+      }
+      
+      if (!problem && newPool.solved.length > 0) {
         if(newPool2.solved.inrange.length > 0) {
           problem = chooseFrom(newPool2.solved.inrange);
-        } else {
+        } else if(newPool2.solved.outsiderange.length > 0) {
           problem = chooseFrom(newPool2.solved.outsiderange);
         }
       }
-      return {
+      return problem ? {
         ...problem,
         url: `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`,
         solvedTime: null,
-      };
+      } : null;
     });
 
     setIsLoading(false);
-    return newProblems;
+    return newProblems.filter(p => p !== null);
   };
 
 
