@@ -201,7 +201,7 @@ const useProblems = (user: User | null | undefined) => {
       }
       return problem ? {
         ...problem,
-        url: `https://codeforces.com/contest/${problem.contestId}/problem/${problem.index}`,
+        url: `https://codeforces.com/problemset/problem/${problem.contestId}/${problem.index}`,
         solvedTime: null,
       } : null;
     });
