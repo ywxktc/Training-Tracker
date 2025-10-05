@@ -63,23 +63,59 @@ const useProblems = (user: User | null | undefined) => {
     if (!user || isLoadingAll) {
       return;
     }
-  
+
     const ratings = [
       parseInt(user.level.P1),
       parseInt(user.level.P2),
       parseInt(user.level.P3),
       parseInt(user.level.P4),
     ];
-  
+
+    // 1) 精确已解集合：contestId_index
     const solvedProblemIds = new Set(
       solvedProblems?.map((p) => `${p.contestId}_${p.index}`) ?? []
     );
 
-  
+    // 2) 名称 -> 已解 contestId 列表（严格名称相等）
+    const solvedNameToContestIds = new Map<string, number[]>();
+    if (solvedProblems) {
+      for (const p of solvedProblems) {
+        const name = p.name;
+        const cid = Number(p.contestId);
+        if (!name || !Number.isFinite(cid)) continue;
+        if (!solvedNameToContestIds.has(name)) {
+          solvedNameToContestIds.set(name, []);
+        }
+        solvedNameToContestIds.get(name)!.push(cid);
+      }
+    }
+
+    // 3) 基于名称 + contestId 差值<5 的近似已解，补充到 solvedProblemIds 里
+    if (allProblems && solvedNameToContestIds.size > 0) {
+      for (const problem of allProblems) {
+        const key = `${problem.contestId}_${problem.index}`;
+        if (solvedProblemIds.has(key)) continue; // 已经是精确已解
+
+        const name = problem.name;
+        const cid = Number(problem.contestId);
+        if (!name || !Number.isFinite(cid)) continue;
+
+        const solvedCids = solvedNameToContestIds.get(name);
+        if (!solvedCids) continue;
+
+        // 只要存在一个已解题目与其同名且 contestId 差值 < 5，则认为“近似已解”
+        const approxSolved = solvedCids.some((scid) => Math.abs(scid - cid) < 5);
+        if (approxSolved) {
+          solvedProblemIds.add(key);
+        }
+      }
+    }
+
+    // 4) 用增强后的 solvedProblemIds 进行未解筛选
     const unsolvedProblems = allProblems?.filter(
       (problem) => !solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
     );
-  
+
     const newProblemPools = ratings.map((rating) => ({
       rating,
       solved: solvedProblems?.filter((problem) => problem.rating === rating) ?? [],
