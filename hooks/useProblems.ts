@@ -148,7 +148,7 @@ const useProblems = (user: User | null | undefined) => {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 3600000,
+      dedupingInterval: 60000, // 1 minute - shorter since we handle caching
     }
   );
 
@@ -165,7 +165,7 @@ const useProblems = (user: User | null | undefined) => {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      dedupingInterval: 3600000,
+      dedupingInterval: 60000, // 1 minute - shorter since we handle caching
     }
   );
 
@@ -188,7 +188,7 @@ const useProblems = (user: User | null | undefined) => {
     },
     {
       revalidateOnFocus: false,
-      dedupingInterval: 300000,
+      dedupingInterval: 60000, // 1 minute - shorter since we handle caching
     }
   );
 
