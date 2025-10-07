@@ -79,3 +79,6 @@ No formal test suite configured. Manual testing through development server.
 - Data loads may be slow due to Codeforces API calls
 - Consider implementing caching for frequently accessed data
 - All data is ephemeral (stored in localStorage) - warn users about clearing browser data
+
+## Development Environment Notes
+- **Shell Configuration**: User's `cd` command is replaced by zoxide, a smart directory jumper that learns frequently used directories and enables fuzzy matching
