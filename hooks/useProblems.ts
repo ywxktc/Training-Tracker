@@ -1,30 +1,51 @@
-import { useState, useEffect } from "react";
-import useSWR from "swr";
-import { CodeforcesProblem, ProblemTag } from "@/types/Codeforces";
-import getAllProblems from "@/utils/codeforces/getAllProblems";
-import getSolvedProblems from "@/utils/codeforces/getSolvedProblems";
-import { User } from "@/types/User";
+import { useState, useEffect } from 'react';
+import useSWR from 'swr';
+import { CodeforcesProblem, Contest, ProblemTag } from '@/types/Codeforces';
+import getAllProblems from '@/utils/codeforces/getAllProblems';
+import getSolvedProblems from '@/utils/codeforces/getSolvedProblems';
+import { User } from '@/types/User';
+import getContests from '@/utils/codeforces/getContests';
 
-
-const PROBLEMS_CACHE_KEY = "codeforces-all-problems";
+const PROBLEMS_CACHE_KEY = 'codeforces-all-problems';
 const SOLVED_PROBLEMS_CACHE_KEY = (handle: string) =>
   `codeforces-solved-${handle}`;
 
 const useProblems = (user: User | null | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [problemPools, setProblemPools] = useState<{
-    rating: number,
-    solved: CodeforcesProblem[],
-    unsolved: CodeforcesProblem[]
-  }[]>([]);
+  const [problemPools, setProblemPools] = useState<
+    {
+      rating: number;
+      solved: CodeforcesProblem[];
+      unsolved: CodeforcesProblem[];
+    }[]
+  >([]);
 
   // Fetch all problems
-  const { data: allProblems, isLoading: isLoadingAll } = useSWR<CodeforcesProblem[]>(
+  const { data: allProblems, isLoading: isLoadingAll } = useSWR<
+    CodeforcesProblem[]
+  >(
     PROBLEMS_CACHE_KEY,
     async () => {
       const res = await getAllProblems();
       if (!res.success) {
-        throw new Error("Failed to fetch problems");
+        throw new Error('Failed to fetch problems');
+      }
+      return res.data;
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 3600000,
+    }
+  );
+
+  // Fetch all contests
+  const { data: contests, isLoading: isLoadingContests } = useSWR<Contest[]>(
+    'codeforces-contests',
+    async () => {
+      const res = await getContests();
+      if (!res.success) {
+        throw new Error('Failed to fetch contests');
       }
       return res.data;
     },
@@ -39,16 +60,16 @@ const useProblems = (user: User | null | undefined) => {
   const {
     data: solvedProblems,
     isLoading: isLoadingSolved,
-    mutate: mutateSolved
+    mutate: mutateSolved,
   } = useSWR<CodeforcesProblem[]>(
     user ? SOLVED_PROBLEMS_CACHE_KEY(user.codeforcesHandle) : null,
     async () => {
       if (!user) {
-        throw new Error("No user");
+        throw new Error('No user');
       }
       const res = await getSolvedProblems(user);
       if (!res.success) {
-        throw new Error("Failed to fetch solved problems");
+        throw new Error('Failed to fetch solved problems');
       }
       return res.data;
     },
@@ -104,7 +125,9 @@ const useProblems = (user: User | null | undefined) => {
         if (!solvedCids) continue;
 
         // 只要存在一个已解题目与其同名且 contestId 差值 < 5，则认为“近似已解”
-        const approxSolved = solvedCids.some((scid) => Math.abs(scid - cid) < 5);
+        const approxSolved = solvedCids.some(
+          (scid) => Math.abs(scid - cid) < 5
+        );
         if (approxSolved) {
           solvedProblemIds.add(key);
         }
@@ -113,13 +136,16 @@ const useProblems = (user: User | null | undefined) => {
 
     // 4) 用增强后的 solvedProblemIds 进行未解筛选
     const unsolvedProblems = allProblems?.filter(
-      (problem) => !solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
+      (problem) =>
+        !solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
     );
 
     const newProblemPools = ratings.map((rating) => ({
       rating,
-      solved: solvedProblems?.filter((problem) => problem.rating === rating) ?? [],
-      unsolved: unsolvedProblems?.filter((problem) => problem.rating === rating) ?? [],
+      solved:
+        solvedProblems?.filter((problem) => problem.rating === rating) ?? [],
+      unsolved:
+        unsolvedProblems?.filter((problem) => problem.rating === rating) ?? [],
     }));
 
     setProblemPools(newProblemPools);
@@ -134,13 +160,16 @@ const useProblems = (user: User | null | undefined) => {
 
     try {
       // Await the mutation and capture the updated data
-      const updatedData = await mutateSolved(async () => {
-        const res = await getSolvedProblems(user);
-        if (!res.success) {
-          throw new Error("Failed to fetch solved problems");
-        }
-        return res.data;
-      }, { revalidate: true });
+      const updatedData = await mutateSolved(
+        async () => {
+          const res = await getSolvedProblems(user);
+          if (!res.success) {
+            throw new Error('Failed to fetch solved problems');
+          }
+          return res.data;
+        },
+        { revalidate: true }
+      );
 
       setIsLoading(false);
       // Return the updated data so caller can use it immediately
@@ -165,11 +194,11 @@ const useProblems = (user: User | null | undefined) => {
       if (tags.length > 0) {
         newPool = {
           ...pool,
-          solved: pool.solved.filter(
-            (problem) => tags.some((tag: ProblemTag) => problem.tags.includes(tag.value))
+          solved: pool.solved.filter((problem) =>
+            tags.some((tag: ProblemTag) => problem.tags.includes(tag.value))
           ),
-          unsolved: pool.unsolved.filter(
-            (problem) => tags.some((tag: ProblemTag) => problem.tags.includes(tag.value))
+          unsolved: pool.unsolved.filter((problem) =>
+            tags.some((tag: ProblemTag) => problem.tags.includes(tag.value))
           ),
         };
       }
@@ -188,27 +217,29 @@ const useProblems = (user: User | null | undefined) => {
 
       newPool2.solved.inrange = newPool.solved.filter((problem) => {
         const id = problem.contestId;
-        return (id >= lb && id <= ub);
+        return id >= lb && id <= ub;
       });
       newPool2.solved.outsiderange = newPool.solved.filter((problem) => {
         const id = problem.contestId;
-        return (id < lb || id > ub);
+        return id < lb || id > ub;
       });
 
       newPool2.unsolved.inrange = newPool.unsolved.filter((problem) => {
         const id = problem.contestId;
-        return (id >= lb && id <= ub);
+        return id >= lb && id <= ub;
       });
       newPool2.unsolved.outsiderange = newPool.unsolved.filter((problem) => {
         const id = problem.contestId;
-        return (id < lb || id > ub);
+        return id < lb || id > ub;
       });
-      
-      const chooseFrom = (problist: CodeforcesProblem[]): CodeforcesProblem | null => {
+
+      const chooseFrom = (
+        problist: CodeforcesProblem[]
+      ): CodeforcesProblem | null => {
         if (problist.length === 0) {
           return null;
         }
-        
+
         let tmp = problist[Math.floor(Math.random() * problist.length)];
         let str = `${tmp.contestId}_${tmp.index}`;
         while (alreadyChosen.has(str)) {
@@ -216,36 +247,37 @@ const useProblems = (user: User | null | undefined) => {
           str = `${tmp.contestId}_${tmp.index}`;
         }
         alreadyChosen.add(str);
-        
+
         return tmp;
       };
 
       if (newPool.unsolved.length > 0) {
-        if(newPool2.unsolved.inrange.length > 0) {
+        if (newPool2.unsolved.inrange.length > 0) {
           problem = chooseFrom(newPool2.unsolved.inrange);
-        } else if(newPool2.unsolved.outsiderange.length > 0) {
+        } else if (newPool2.unsolved.outsiderange.length > 0) {
           problem = chooseFrom(newPool2.unsolved.outsiderange);
         }
       }
-      
+
       if (!problem && newPool.solved.length > 0) {
-        if(newPool2.solved.inrange.length > 0) {
+        if (newPool2.solved.inrange.length > 0) {
           problem = chooseFrom(newPool2.solved.inrange);
-        } else if(newPool2.solved.outsiderange.length > 0) {
+        } else if (newPool2.solved.outsiderange.length > 0) {
           problem = chooseFrom(newPool2.solved.outsiderange);
         }
       }
-      return problem ? {
-        ...problem,
-        url: `https://codeforces.com/problemset/problem/${problem.contestId}/${problem.index}`,
-        solvedTime: null,
-      } : null;
+      return problem
+        ? {
+            ...problem,
+            url: `https://codeforces.com/problemset/problem/${problem.contestId}/${problem.index}`,
+            solvedTime: null,
+          }
+        : null;
     });
 
     setIsLoading(false);
-    return newProblems.filter(p => p !== null);
+    return newProblems.filter((p) => p !== null);
   };
-
 
   return {
     allProblems: allProblems ?? [],
@@ -258,4 +290,3 @@ const useProblems = (user: User | null | undefined) => {
 };
 
 export default useProblems;
-

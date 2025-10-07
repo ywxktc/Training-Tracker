@@ -1,4 +1,4 @@
-import { Level } from "@/types/Level";
+import { Level } from '@/types/Level';
 
 type User = {
   codeforcesHandle: string;

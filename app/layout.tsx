@@ -1,23 +1,23 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
-import NavBar from "@/components/NavBar";
-import ThemeProvider from "@/components/ThemeProvider";
+import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import './globals.css';
+import NavBar from '@/components/NavBar';
+import ThemeProvider from '@/components/ThemeProvider';
 
 const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+  src: './fonts/GeistVF.woff',
+  variable: '--font-geist-sans',
+  weight: '100 900',
 });
 const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+  src: './fonts/GeistMonoVF.woff',
+  variable: '--font-geist-mono',
+  weight: '100 900',
 });
 
 export const metadata: Metadata = {
-  title: "Training Tracker",
-  description: "A tool for tracking competitive programming training",
+  title: 'Training Tracker',
+  description: 'A tool for tracking competitive programming training',
 };
 
 export default function RootLayout({
@@ -45,4 +45,3 @@ export default function RootLayout({
     </html>
   );
 }
-

@@ -1,5 +1,5 @@
-import { Level } from "@/types/Level";
-import { TrainingProblem } from "@/types/TrainingProblem";
+import { Level } from '@/types/Level';
+import { TrainingProblem } from '@/types/TrainingProblem';
 
 type Training = {
   level: Level;

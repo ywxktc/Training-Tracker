@@ -1,22 +1,18 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
-import useUser from "@/hooks/useUser";
-import useProblems from "@/hooks/useProblems";
-import { TrainingProblem } from "@/types/TrainingProblem";
-import { Training } from "@/types/Training";
-import { ProblemTag } from "@/types/Codeforces";
-import useHistory from "@/hooks/useHistory";
-import useUpsolvedProblems from "@/hooks/useUpsolvedProblems";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import useUser from '@/hooks/useUser';
+import useProblems from '@/hooks/useProblems';
+import { TrainingProblem } from '@/types/TrainingProblem';
+import { Training } from '@/types/Training';
+import { ProblemTag } from '@/types/Codeforces';
+import useHistory from '@/hooks/useHistory';
+import useUpsolvedProblems from '@/hooks/useUpsolvedProblems';
 
-const TRAINING_STORAGE_KEY = "training-tracker-training";
+const TRAINING_STORAGE_KEY = 'training-tracker-training';
 
 const useTraining = () => {
   const router = useRouter();
-  const {
-    user,
-    isLoading: isUserLoading,
-    updateUserLevel,
-  } = useUser();
+  const { user, isLoading: isUserLoading, updateUserLevel } = useUser();
   const {
     solvedProblems,
     isLoading: isProblemsLoading,
@@ -25,7 +21,6 @@ const useTraining = () => {
   } = useProblems(user);
   const { addTraining } = useHistory();
   const { addUpsolvedProblems } = useUpsolvedProblems();
-
 
   const [problems, setProblems] = useState<TrainingProblem[]>([]);
   const [training, setTraining] = useState<Training | null>(null);
@@ -38,16 +33,18 @@ const useTraining = () => {
       solvedProblems.map((p) => `${p.contestId}_${p.index}`)
     );
 
-    setTraining(prev => {
+    setTraining((prev) => {
       if (!prev) {
         return null;
       }
-      
-      const updatedProblems = prev.problems.map(problem => ({
+
+      const updatedProblems = prev.problems.map((problem) => ({
         ...problem,
-        solvedTime: solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
-          ? problem.solvedTime ?? new Date().getTime()
-          : problem.solvedTime
+        solvedTime: solvedProblemIds.has(
+          `${problem.contestId}_${problem.index}`
+        )
+          ? (problem.solvedTime ?? new Date().getTime())
+          : problem.solvedTime,
       }));
 
       // Only update if there are changes
@@ -57,10 +54,13 @@ const useTraining = () => {
 
       const updatedTraining = {
         ...prev,
-        problems: updatedProblems
+        problems: updatedProblems,
       };
 
-      localStorage.setItem(TRAINING_STORAGE_KEY, JSON.stringify(updatedTraining));
+      localStorage.setItem(
+        TRAINING_STORAGE_KEY,
+        JSON.stringify(updatedTraining)
+      );
       return updatedTraining;
     });
   }, [solvedProblems]);
@@ -73,7 +73,7 @@ const useTraining = () => {
   const finishTraining = useCallback(async () => {
     // Immediately set training state to false to prevent any race conditions
     setIsTraining(false);
-    
+
     // Clear any existing timer first
     if (timerRef.current) {
       clearTimeout(timerRef.current);
@@ -82,7 +82,7 @@ const useTraining = () => {
 
     // Capture current training value before clearing state
     const currentTraining = training;
-    
+
     // Clear all training-related states immediately
     setProblems([]);
     setTraining(null);
@@ -103,12 +103,12 @@ const useTraining = () => {
       latestSolvedProblems.map((p) => `${p.contestId}_${p.index}`)
     );
 
-    const updatedProblems = currentTraining.problems.map(problem => ({
+    const updatedProblems = currentTraining.problems.map((problem) => ({
       ...problem,
       solvedTime: solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
-        ? problem.solvedTime ?? new Date().getTime()
-        : problem.solvedTime
-    }));  
+        ? (problem.solvedTime ?? new Date().getTime())
+        : problem.solvedTime,
+    }));
 
     addTraining({ ...currentTraining, problems: updatedProblems });
 
@@ -118,17 +118,23 @@ const useTraining = () => {
     updateUserLevel({ delta });
 
     // Add unsolved problems to upsolved problems list
-    const unsolvedProblems = updatedProblems.filter(p => !p.solvedTime);
+    const unsolvedProblems = updatedProblems.filter((p) => !p.solvedTime);
     addUpsolvedProblems(unsolvedProblems);
 
-    router.push("/statistics");
-
-  }, [training, addTraining, router, refreshSolvedProblems, updateUserLevel, addUpsolvedProblems]);
+    router.push('/statistics');
+  }, [
+    training,
+    addTraining,
+    router,
+    refreshSolvedProblems,
+    updateUserLevel,
+    addUpsolvedProblems,
+  ]);
 
   // Redirect if no user
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.push("/");
+      router.push('/');
     }
   }, [user, isUserLoading, router]);
 
@@ -140,8 +146,6 @@ const useTraining = () => {
       setTraining(parsed);
     }
   }, []);
-
-
 
   // Update training in localStorage
   useEffect(() => {
@@ -196,11 +200,9 @@ const useTraining = () => {
     updateProblemStatus();
   }, [isTraining, training, solvedProblems, updateProblemStatus]);
 
-
-
   const startTraining = () => {
     if (!user) {
-      router.push("/");
+      router.push('/');
       return;
     }
 

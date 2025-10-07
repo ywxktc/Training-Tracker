@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 const useBounds = () => {
   const [firstInput, setFirstInput] = useState(1);
@@ -16,7 +16,7 @@ const useBounds = () => {
     firstInput,
     secondInput,
     onFirstInputChange,
-    onSecondInputChange
+    onSecondInputChange,
   };
 };
 

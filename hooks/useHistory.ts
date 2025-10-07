@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import useUser from "@/hooks/useUser";
-import { Training } from "@/types/Training";
-import getPerformance from "@/utils/getPerformance";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import useUser from '@/hooks/useUser';
+import { Training } from '@/types/Training';
+import getPerformance from '@/utils/getPerformance';
 
-const HISTORY_STORAGE_KEY = "training-tracker-history";
+const HISTORY_STORAGE_KEY = 'training-tracker-history';
 
 const useHistory = () => {
   const router = useRouter();
@@ -14,7 +14,7 @@ const useHistory = () => {
   // Redirect if no user
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.push("/");
+      router.push('/');
     }
   }, [user, isUserLoading, router]);
 

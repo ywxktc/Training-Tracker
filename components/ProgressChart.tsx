@@ -1,4 +1,4 @@
-import { Training } from "@/types/Training";
+import { Training } from '@/types/Training';
 import {
   LineChart,
   Line,
@@ -7,8 +7,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from 'recharts';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const ProgressChart = ({ history }: { history: Training[] }) => {
   const formatDate = (timestamp: number) => {
@@ -40,15 +40,18 @@ const ProgressChart = ({ history }: { history: Training[] }) => {
             />
             <Tooltip
               labelFormatter={formatDate}
-              formatter={(value: number) => [`${value}`, "Performance"]}
-              contentStyle={{ backgroundColor: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}
+              formatter={(value: number) => [`${value}`, 'Performance']}
+              contentStyle={{
+                backgroundColor: 'hsl(var(--card))',
+                borderColor: 'hsl(var(--border))',
+              }}
             />
             <Line
               type="monotone"
               dataKey="performance"
               stroke="hsl(var(--primary))"
               strokeWidth={2}
-              dot={{ fill: "hsl(var(--primary))", strokeWidth: 2 }}
+              dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2 }}
               activeDot={{ r: 8 }}
             />
           </LineChart>

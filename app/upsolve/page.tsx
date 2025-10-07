@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { TrainingProblem } from "@/types/TrainingProblem";
-import useUpsolvedProblems from "@/hooks/useUpsolvedProblems";
-import Loader from "@/components/Loader";
-import Error from "@/components/Error";
-import UpsolvedProblemsList from "@/components/UpsolvedProblemsList";
+import { TrainingProblem } from '@/types/TrainingProblem';
+import useUpsolvedProblems from '@/hooks/useUpsolvedProblems';
+import Loader from '@/components/Loader';
+import Error from '@/components/Error';
+import UpsolvedProblemsList from '@/components/UpsolvedProblemsList';
 
 const Upsolve = () => {
   const {
@@ -24,7 +24,7 @@ const Upsolve = () => {
   }
 
   const onDelete = (problem: TrainingProblem) => {
-    if (confirm("Are you sure you want to delete this problem?")) {
+    if (confirm('Are you sure you want to delete this problem?')) {
       deleteUpsolvedProblem(problem);
     }
   };

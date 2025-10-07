@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 
-import { User } from "@/types/User";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Response } from "@/types/Response";
-import { LucideEdit } from "lucide-react";
+import { User } from '@/types/User';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Response } from '@/types/Response';
+import { LucideEdit } from 'lucide-react';
 
 const Profile = ({
   user,
@@ -20,7 +20,9 @@ const Profile = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [newLevelNumber, setNewLevelNumber] = useState<number>(+user?.level.level);
+  const [newLevelNumber, setNewLevelNumber] = useState<number>(
+    +user?.level.level
+  );
 
   const onSave = async () => {
     setIsLoading(true);
@@ -32,8 +34,10 @@ const Profile = ({
   return (
     <div className="flex flex-col md:flex-row items-center justify-center gap-6">
       <Avatar className="w-24 h-24 md:w-40 md:h-40">
-        <AvatarImage src={user?.avatar || "/default-avatar.jpg"} alt="avatar" />
-        <AvatarFallback>{user?.codeforcesHandle?.slice(0, 2).toUpperCase()}</AvatarFallback>
+        <AvatarImage src={user?.avatar || '/default-avatar.jpg'} alt="avatar" />
+        <AvatarFallback>
+          {user?.codeforcesHandle?.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
       </Avatar>
       <div className="flex flex-col items-center md:items-start justify-center gap-2">
         <div className="text-lg">
@@ -53,13 +57,16 @@ const Profile = ({
                 onChange={(e) => setNewLevelNumber(parseInt(e.target.value))}
               />
               <Button onClick={onSave} disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save"}
+                {isLoading ? 'Saving...' : 'Save'}
               </Button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="font-bold">Level:</span>{" "} {user?.level.level}
-              <LucideEdit className="w-4 h-4 cursor-pointer" onClick={() => setIsEditing(true)} />
+              <span className="font-bold">Level:</span> {user?.level.level}
+              <LucideEdit
+                className="w-4 h-4 cursor-pointer"
+                onClick={() => setIsEditing(true)}
+              />
             </div>
           )}
         </div>

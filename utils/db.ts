@@ -1,5 +1,5 @@
-import { SuccessResponse, ErrorResponse } from "@/types/Response";
-import type { Response } from "@/types/Response";
+import { SuccessResponse, ErrorResponse } from '@/types/Response';
+import type { Response } from '@/types/Response';
 
 const setItem = <T>(key: string, value: T): Response<T> => {
   try {
@@ -15,7 +15,7 @@ const getItem = <T>(key: string): Response<T> => {
   try {
     const item = localStorage.getItem(key);
     if (!item) {
-      return ErrorResponse("Item not found");
+      return ErrorResponse('Item not found');
     }
     return SuccessResponse<T>(JSON.parse(item));
   } catch (error) {

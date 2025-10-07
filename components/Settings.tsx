@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import useUser from "@/hooks/useUser";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import useUser from '@/hooks/useUser';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 const Settings = () => {
-  const [codeforcesHandle, setCodeforcesHandle] = useState("");
+  const [codeforcesHandle, setCodeforcesHandle] = useState('');
   const { updateUser } = useUser();
   const [isUpdating, setIsUpdating] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   const onChangeCodeforcesHandle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCodeforcesHandle(e.target.value);
@@ -43,7 +43,7 @@ const Settings = () => {
           onClick={onUpdateUser}
           disabled={isUpdating}
         >
-          {isUpdating ? "Updating..." : "Update"}
+          {isUpdating ? 'Updating...' : 'Update'}
         </Button>
       </div>
       {errorMessage && <div className="text-red-500">{errorMessage}</div>}

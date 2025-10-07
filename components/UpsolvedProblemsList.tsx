@@ -1,7 +1,7 @@
-import { TrainingProblem } from "@/types/TrainingProblem";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Trash2, RefreshCw } from "lucide-react";
+import { TrainingProblem } from '@/types/TrainingProblem';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Trash2, RefreshCw } from 'lucide-react';
 
 const UpsolvedProblemsList = ({
   upsolvedProblems,
@@ -33,7 +33,7 @@ const UpsolvedProblemsList = ({
             href={problem.url}
             target="_blank"
           >
-            {problem.solvedTime ? "✅ " : "❌ "} {problem.name}
+            {problem.solvedTime ? '✅ ' : '❌ '} {problem.name}
           </Link>
           <Button variant="ghost" size="sm" onClick={() => onDelete(problem)}>
             <Trash2 className="h-4 w-4" />

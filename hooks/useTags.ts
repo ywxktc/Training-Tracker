@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { ProblemTag } from "@/types/Codeforces";
-import tagData from "@/public/data/tag.json";
+import { useState } from 'react';
+import { ProblemTag } from '@/types/Codeforces';
+import tagData from '@/public/data/tag.json';
 
 export const useTags = () => {
   const allTags = tagData as ProblemTag[];
@@ -8,7 +8,9 @@ export const useTags = () => {
 
   const onTagClick = (tag: ProblemTag) => {
     if (selectedTags.includes(tag)) {
-      setSelectedTags((prevTags) => prevTags.filter((t) => t.value !== tag.value));
+      setSelectedTags((prevTags) =>
+        prevTags.filter((t) => t.value !== tag.value)
+      );
     } else {
       setSelectedTags((prevTags) => [...prevTags, tag]);
     }

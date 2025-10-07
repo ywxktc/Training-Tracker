@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 
 const CountDown = ({
   startTime,
@@ -31,7 +31,7 @@ const CountDown = ({
     const timer = setInterval(() => {
       const remaining = calculateTimeLeft();
       setTimeLeft(remaining);
-      
+
       if (remaining <= 0) {
         clearInterval(timer);
       }
@@ -56,10 +56,10 @@ const CountDown = ({
             )
           ) : (
             <span>
-              {!isStarted && "Training will start in "}
-              {hours.toString().padStart(2, "0")}:
-              {minutes.toString().padStart(2, "0")}:
-              {seconds.toString().padStart(2, "0")}
+              {!isStarted && 'Training will start in '}
+              {hours.toString().padStart(2, '0')}:
+              {minutes.toString().padStart(2, '0')}:
+              {seconds.toString().padStart(2, '0')}
             </span>
           )}
         </div>

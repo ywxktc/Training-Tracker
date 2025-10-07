@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import useHistory from "@/hooks/useHistory";
-import Loader from "@/components/Loader";
-import History from "@/components/History";
-import ProgressChart from "@/components/ProgressChart";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import useHistory from '@/hooks/useHistory';
+import Loader from '@/components/Loader';
+import History from '@/components/History';
+import ProgressChart from '@/components/ProgressChart';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
 const Statistics = () => {
   const { history, isLoading, deleteTraining, clearHistory } = useHistory();
@@ -23,7 +23,7 @@ const Statistics = () => {
   const onClearHistory = () => {
     if (
       confirm(
-        "Are you sure to clear the history? This action cannot be undone."
+        'Are you sure to clear the history? This action cannot be undone.'
       )
     ) {
       clearHistory();
@@ -32,11 +32,11 @@ const Statistics = () => {
 
   const onExportJson = () => {
     const json = JSON.stringify(history, null, 2);
-    const blob = new Blob([json], { type: "application/json" });
+    const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
-    a.download = "history.json";
+    a.download = 'history.json';
     a.click();
   };
 

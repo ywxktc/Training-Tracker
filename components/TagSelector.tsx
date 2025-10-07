@@ -1,6 +1,6 @@
-import { ProblemTag } from "@/types/Codeforces";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ProblemTag } from '@/types/Codeforces';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const TagSelector = ({
   allTags,
@@ -23,7 +23,7 @@ const TagSelector = ({
           {allTags.map((tag) => (
             <Button
               key={tag.value}
-              variant={selectedTags.includes(tag) ? "default" : "outline"}
+              variant={selectedTags.includes(tag) ? 'default' : 'outline'}
               size="sm"
               onClick={() => onTagClick(tag)}
             >
@@ -32,11 +32,7 @@ const TagSelector = ({
           ))}
         </div>
       </ScrollArea>
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={onClearTags}
-      >
+      <Button variant="destructive" size="sm" onClick={onClearTags}>
         Clear All
       </Button>
     </div>

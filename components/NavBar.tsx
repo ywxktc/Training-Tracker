@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import ModeToggle from "@/components/ModeToggle";
-import { Menu } from "lucide-react";
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import ModeToggle from '@/components/ModeToggle';
+import { Menu } from 'lucide-react';
 
 const links = [
-  { href: "/", label: "Home" },
-  { href: "/training", label: "Training" },
-  { href: "/statistics", label: "Statistics" },
-  { href: "/upsolve", label: "Upsolve" },
+  { href: '/', label: 'Home' },
+  { href: '/training', label: 'Training' },
+  { href: '/statistics', label: 'Statistics' },
+  { href: '/upsolve', label: 'Upsolve' },
 ];
 
 const NavBar = () => {
@@ -29,7 +29,7 @@ const NavBar = () => {
             {links.map((link) => (
               <Button
                 key={link.href}
-                variant={pathname === link.href ? "default" : "ghost"}
+                variant={pathname === link.href ? 'default' : 'ghost'}
                 asChild
               >
                 <Link href={link.href}>{link.label}</Link>
@@ -38,7 +38,11 @@ const NavBar = () => {
             <ModeToggle />
           </div>
           <div className="sm:hidden">
-            <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               <Menu className="h-6 w-6" />
               <span className="sr-only">Toggle menu</span>
             </Button>
@@ -50,7 +54,7 @@ const NavBar = () => {
               {links.map((link) => (
                 <Button
                   key={link.href}
-                  variant={pathname === link.href ? "default" : "ghost"}
+                  variant={pathname === link.href ? 'default' : 'ghost'}
                   className="w-full justify-start"
                   asChild
                   onClick={() => setIsMenuOpen(false)}
