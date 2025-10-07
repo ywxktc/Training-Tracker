@@ -10,6 +10,119 @@ const PROBLEMS_CACHE_KEY = 'codeforces-all-problems';
 const SOLVED_PROBLEMS_CACHE_KEY = (handle: string) =>
   `codeforces-solved-${handle}`;
 
+// Helper function to filter out Kotlin-only contest problems
+const filterKotlinProblems = (
+  problems: CodeforcesProblem[] | undefined,
+  contests: Contest[] | undefined
+): CodeforcesProblem[] => {
+  return (
+    problems?.filter((problem) => {
+      const contest = contests?.find((c) => c.id === problem.contestId);
+      return !contest?.name?.toLowerCase().includes('kotlin');
+    }) ?? []
+  );
+};
+
+// Helper function to build solved problem IDs set
+const buildSolvedProblemIds = (
+  solvedProblems: CodeforcesProblem[]
+): Set<string> => {
+  return new Set(solvedProblems.map((p) => `${p.contestId}_${p.index}`));
+};
+
+// Helper function to build mapping from problem name to solved contest IDs
+const buildSolvedNameToContestIds = (
+  solvedProblems: CodeforcesProblem[]
+): Map<string, number[]> => {
+  const solvedNameToContestIds = new Map<string, number[]>();
+
+  for (const problem of solvedProblems) {
+    const name = problem.name;
+    const contestId = Number(problem.contestId);
+
+    if (!name || !Number.isFinite(contestId)) continue;
+
+    if (!solvedNameToContestIds.has(name)) {
+      solvedNameToContestIds.set(name, []);
+    }
+    solvedNameToContestIds.get(name)!.push(contestId);
+  }
+
+  return solvedNameToContestIds;
+};
+
+// Helper function to enhance solved problem IDs with approximate matches
+const enhanceSolvedProblemIds = (
+  allProblems: CodeforcesProblem[],
+  solvedNameToContestIds: Map<string, number[]>,
+  solvedProblemIds: Set<string>
+): void => {
+  for (const problem of allProblems) {
+    const problemKey = `${problem.contestId}_${problem.index}`;
+
+    // Skip if already exactly solved
+    if (solvedProblemIds.has(problemKey)) continue;
+
+    const name = problem.name;
+    const contestId = Number(problem.contestId);
+
+    if (!name || !Number.isFinite(contestId)) continue;
+
+    const solvedContestIds = solvedNameToContestIds.get(name);
+    if (!solvedContestIds) continue;
+
+    // Consider problem approximately solved if there's a solved problem with same name
+    // and contest ID difference less than 5
+    const isApproximatelySolved = solvedContestIds.some(
+      (solvedContestId) => Math.abs(solvedContestId - contestId) < 5
+    );
+
+    if (isApproximatelySolved) {
+      solvedProblemIds.add(problemKey);
+    }
+  }
+};
+
+// Helper function to categorize problems by contest ID range
+const categorizeProblemsByContestRange = (
+  problems: CodeforcesProblem[],
+  lowerBound: number,
+  upperBound: number
+) => {
+  return {
+    inRange: problems.filter(
+      (problem) =>
+        problem.contestId >= lowerBound && problem.contestId <= upperBound
+    ),
+    outOfRange: problems.filter(
+      (problem) =>
+        problem.contestId < lowerBound || problem.contestId > upperBound
+    ),
+  };
+};
+
+// Helper function to randomly select a problem from a list
+const selectRandomProblem = (
+  problems: CodeforcesProblem[],
+  alreadyChosen: Set<string>
+): CodeforcesProblem | null => {
+  if (problems.length === 0) {
+    return null;
+  }
+
+  let selectedProblem = problems[Math.floor(Math.random() * problems.length)];
+  let problemKey = `${selectedProblem.contestId}_${selectedProblem.index}`;
+
+  // Ensure we don't select the same problem twice
+  while (alreadyChosen.has(problemKey)) {
+    selectedProblem = problems[Math.floor(Math.random() * problems.length)];
+    problemKey = `${selectedProblem.contestId}_${selectedProblem.index}`;
+  }
+
+  alreadyChosen.add(problemKey);
+  return selectedProblem;
+};
+
 const useProblems = (user: User | null | undefined) => {
   const [isLoading, setIsLoading] = useState(false);
   const [problemPools, setProblemPools] = useState<
@@ -93,74 +206,42 @@ const useProblems = (user: User | null | undefined) => {
     ];
 
     // Filter out Kotlin-only contest problems
-    const filteredAllProblems = allProblems?.filter((problem) => {
-      const contest = contests?.find((c) => c.id === problem.contestId);
-      // Exclude problems from contests with "Kotlin" in the name
-      return !contest?.name?.toLowerCase().includes('kotlin');
-    });
-
-    const filteredSolvedProblems = solvedProblems?.filter((problem) => {
-      const contest = contests?.find((c) => c.id === problem.contestId);
-      // Exclude problems from contests with "Kotlin" in the name
-      return !contest?.name?.toLowerCase().includes('kotlin');
-    });
-
-    // 1) 精确已解集合：contestId_index
-    const solvedProblemIds = new Set(
-      filteredSolvedProblems?.map((p) => `${p.contestId}_${p.index}`) ?? []
+    const filteredAllProblems = filterKotlinProblems(allProblems, contests);
+    const filteredSolvedProblems = filterKotlinProblems(
+      solvedProblems,
+      contests
     );
 
-    // 2) 名称 -> 已解 contestId 列表（严格名称相等）
-    const solvedNameToContestIds = new Map<string, number[]>();
-    if (filteredSolvedProblems) {
-      for (const p of filteredSolvedProblems) {
-        const name = p.name;
-        const cid = Number(p.contestId);
-        if (!name || !Number.isFinite(cid)) continue;
-        if (!solvedNameToContestIds.has(name)) {
-          solvedNameToContestIds.set(name, []);
-        }
-        solvedNameToContestIds.get(name)!.push(cid);
-      }
+    // Build exact solved problem IDs
+    const solvedProblemIds = buildSolvedProblemIds(filteredSolvedProblems);
+
+    // Build mapping for approximate matching
+    const solvedNameToContestIds = buildSolvedNameToContestIds(
+      filteredSolvedProblems
+    );
+
+    // Enhance solved problem IDs with approximate matches
+    if (filteredAllProblems.length > 0 && solvedNameToContestIds.size > 0) {
+      enhanceSolvedProblemIds(
+        filteredAllProblems,
+        solvedNameToContestIds,
+        solvedProblemIds
+      );
     }
 
-    // 3) 基于名称 + contestId 差值<5 的近似已解，补充到 solvedProblemIds 里
-    if (filteredAllProblems && solvedNameToContestIds.size > 0) {
-      for (const problem of filteredAllProblems) {
-        const key = `${problem.contestId}_${problem.index}`;
-        if (solvedProblemIds.has(key)) continue; // 已经是精确已解
-
-        const name = problem.name;
-        const cid = Number(problem.contestId);
-        if (!name || !Number.isFinite(cid)) continue;
-
-        const solvedCids = solvedNameToContestIds.get(name);
-        if (!solvedCids) continue;
-
-        // 只要存在一个已解题目与其同名且 contestId 差值 < 5，则认为"近似已解"
-        const approxSolved = solvedCids.some(
-          (scid) => Math.abs(scid - cid) < 5
-        );
-        if (approxSolved) {
-          solvedProblemIds.add(key);
-        }
-      }
-    }
-
-    // 4) 用增强后的 solvedProblemIds 进行未解筛选
-    const unsolvedProblems = filteredAllProblems?.filter(
+    // Filter unsolved problems
+    const unsolvedProblems = filteredAllProblems.filter(
       (problem) =>
         !solvedProblemIds.has(`${problem.contestId}_${problem.index}`)
     );
 
+    // Build problem pools by rating
     const newProblemPools = ratings.map((rating) => ({
       rating,
-      solved:
-        filteredSolvedProblems?.filter(
-          (problem) => problem.rating === rating
-        ) ?? [],
-      unsolved:
-        unsolvedProblems?.filter((problem) => problem.rating === rating) ?? [],
+      solved: filteredSolvedProblems.filter(
+        (problem) => problem.rating === rating
+      ),
+      unsolved: unsolvedProblems.filter((problem) => problem.rating === rating),
     }));
 
     setProblemPools(newProblemPools);
@@ -174,7 +255,6 @@ const useProblems = (user: User | null | undefined) => {
     setIsLoading(true);
 
     try {
-      // Await the mutation and capture the updated data
       const updatedData = await mutateSolved(
         async () => {
           const res = await getSolvedProblems(user);
@@ -187,7 +267,6 @@ const useProblems = (user: User | null | undefined) => {
       );
 
       setIsLoading(false);
-      // Return the updated data so caller can use it immediately
       return updatedData;
     } catch (error) {
       setIsLoading(false);
@@ -195,119 +274,99 @@ const useProblems = (user: User | null | undefined) => {
     }
   };
 
-  const getRandomProblems = (tags: ProblemTag[], lb: number, ub: number) => {
+  const getRandomProblems = (
+    tags: ProblemTag[],
+    lowerBound: number,
+    upperBound: number
+  ) => {
     if (!user || problemPools.length === 0) {
       return;
     }
 
     setIsLoading(true);
     const alreadyChosen = new Set<string>();
-    const newProblems = problemPools.map((pool) => {
-      let problem = null;
 
-      let newPool = pool;
+    const newProblems = problemPools.map((pool) => {
+      let selectedProblem: CodeforcesProblem | null = null;
+
+      // Filter pool by tags if provided
+      let filteredPool = pool;
       if (tags.length > 0) {
-        newPool = {
+        filteredPool = {
           ...pool,
           solved: pool.solved.filter((problem) =>
-            tags.some((tag: ProblemTag) => problem.tags.includes(tag.value))
+            tags.some((tag) => problem.tags.includes(tag.value))
           ),
           unsolved: pool.unsolved.filter((problem) =>
-            tags.some((tag: ProblemTag) => problem.tags.includes(tag.value))
+            tags.some((tag) => problem.tags.includes(tag.value))
           ),
         };
       }
 
-      const newPool2 = {
-        rating: newPool.rating,
-        solved: {
-          inrange: [] as CodeforcesProblem[],
-          outsiderange: [] as CodeforcesProblem[],
-        },
-        unsolved: {
-          inrange: [] as CodeforcesProblem[],
-          outsiderange: [] as CodeforcesProblem[],
-        },
+      // Categorize problems by contest ID range
+      const categorizedPool = {
+        rating: filteredPool.rating,
+        solved: categorizeProblemsByContestRange(
+          filteredPool.solved,
+          lowerBound,
+          upperBound
+        ),
+        unsolved: categorizeProblemsByContestRange(
+          filteredPool.unsolved,
+          lowerBound,
+          upperBound
+        ),
       };
 
-      newPool2.solved.inrange = newPool.solved.filter((problem) => {
-        const id = problem.contestId;
-        return id >= lb && id <= ub;
-      });
-      newPool2.solved.outsiderange = newPool.solved.filter((problem) => {
-        const id = problem.contestId;
-        return id < lb || id > ub;
-      });
-
-      newPool2.unsolved.inrange = newPool.unsolved.filter((problem) => {
-        const id = problem.contestId;
-        return id >= lb && id <= ub;
-      });
-      newPool2.unsolved.outsiderange = newPool.unsolved.filter((problem) => {
-        const id = problem.contestId;
-        return id < lb || id > ub;
-      });
-
-      const chooseFrom = (
-        problist: CodeforcesProblem[]
-      ): CodeforcesProblem | null => {
-        if (problist.length === 0) {
-          return null;
-        }
-
-        let tmp = problist[Math.floor(Math.random() * problist.length)];
-        let str = `${tmp.contestId}_${tmp.index}`;
-        while (alreadyChosen.has(str)) {
-          tmp = problist[Math.floor(Math.random() * problist.length)];
-          str = `${tmp.contestId}_${tmp.index}`;
-        }
-        alreadyChosen.add(str);
-
-        return tmp;
-      };
-
-      if (newPool.unsolved.length > 0) {
-        if (newPool2.unsolved.inrange.length > 0) {
-          problem = chooseFrom(newPool2.unsolved.inrange);
-        } else if (newPool2.unsolved.outsiderange.length > 0) {
-          problem = chooseFrom(newPool2.unsolved.outsiderange);
+      // Priority 1: Select from unsolved problems within range
+      if (filteredPool.unsolved.length > 0) {
+        if (categorizedPool.unsolved.inRange.length > 0) {
+          selectedProblem = selectRandomProblem(
+            categorizedPool.unsolved.inRange,
+            alreadyChosen
+          );
+        } else if (categorizedPool.unsolved.outOfRange.length > 0) {
+          selectedProblem = selectRandomProblem(
+            categorizedPool.unsolved.outOfRange,
+            alreadyChosen
+          );
         }
       }
 
-      if (!problem && newPool.solved.length > 0) {
-        if (newPool2.solved.inrange.length > 0) {
-          problem = chooseFrom(newPool2.solved.inrange);
-        } else if (newPool2.solved.outsiderange.length > 0) {
-          problem = chooseFrom(newPool2.solved.outsiderange);
+      // Priority 2: Select from solved problems if no unsolved available
+      if (!selectedProblem && filteredPool.solved.length > 0) {
+        if (categorizedPool.solved.inRange.length > 0) {
+          selectedProblem = selectRandomProblem(
+            categorizedPool.solved.inRange,
+            alreadyChosen
+          );
+        } else if (categorizedPool.solved.outOfRange.length > 0) {
+          selectedProblem = selectRandomProblem(
+            categorizedPool.solved.outOfRange,
+            alreadyChosen
+          );
         }
       }
-      return problem
+
+      // Format the selected problem with additional properties
+      return selectedProblem
         ? {
-            ...problem,
-            url: `https://codeforces.com/problemset/problem/${problem.contestId}/${problem.index}`,
+            ...selectedProblem,
+            url: `https://codeforces.com/problemset/problem/${selectedProblem.contestId}/${selectedProblem.index}`,
             solvedTime: null,
           }
         : null;
     });
 
     setIsLoading(false);
-    return newProblems.filter((p) => p !== null);
+    return newProblems.filter((problem) => problem !== null);
   };
 
   return {
-    allProblems:
-      allProblems?.filter((problem) => {
-        const contest = contests?.find((c) => c.id === problem.contestId);
-        return !contest?.name?.toLowerCase().includes('kotlin');
-      }) ?? [],
-    solvedProblems:
-      solvedProblems?.filter((problem) => {
-        const contest = contests?.find((c) => c.id === problem.contestId);
-        return !contest?.name?.toLowerCase().includes('kotlin');
-      }) ?? [],
+    allProblems: filterKotlinProblems(allProblems, contests),
+    solvedProblems: filterKotlinProblems(solvedProblems, contests),
     isLoading:
       isLoading || isLoadingAll || isLoadingSolved || isLoadingContests,
-
     refreshSolvedProblems,
     getRandomProblems,
   };

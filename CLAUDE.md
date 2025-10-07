@@ -50,6 +50,7 @@ npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
+npx prettier --write .  # Format all code
 ```
 
 ### Type Checking
@@ -82,3 +83,9 @@ No formal test suite configured. Manual testing through development server.
 
 ## Development Environment Notes
 - **Shell Configuration**: User's `cd` command is replaced by zoxide, a smart directory jumper that learns frequently used directories and enables fuzzy matching
+
+## Code Quality Workflow
+- **ALWAYS run Prettier after code changes**: `npx prettier --write .`
+- **ALWAYS run ESLint after code changes**: `npm run lint`
+- **Formatting is mandatory** after any file modification to maintain consistent code style
+- **ESLint must pass** before considering work complete
