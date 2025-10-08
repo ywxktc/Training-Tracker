@@ -18,10 +18,12 @@ const fetchAllProblems = async (): Promise<Response<CodeforcesProblem[]>> => {
     if (data.status !== 'OK') {
       return ErrorResponse('Failed to fetch problems')
     }
-    const problems = data.result.problems.filter(
-      (problem: CodeforcesProblem) =>
-        !filteredContestIds.includes(problem.contestId)
-    )
+    const problems = data.result.problems
+      .filter((problem: CodeforcesProblem) => problem.contestId >= 700)
+      .filter(
+        (problem: CodeforcesProblem) =>
+          !filteredContestIds.includes(problem.contestId)
+      )
     return SuccessResponse(problems)
   } catch (error) {
     return ErrorResponse((error as Error).message)
