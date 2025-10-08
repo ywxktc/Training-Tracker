@@ -1,7 +1,6 @@
 import { CodeforcesProblem } from '@/types/Codeforces'
 import { SuccessResponse, ErrorResponse, Response } from '@/types/Response'
 import { getFromCache, setToCache } from '@/utils/cache'
-import axios from 'axios'
 
 // Filter out Kotlin, Microsoft Q# and April Fools Day Contests
 const filteredContestIds = [

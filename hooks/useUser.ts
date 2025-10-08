@@ -46,7 +46,7 @@ const useUser = () => {
       }
     }
     fetchLatestUser()
-  }, [user?.codeforcesHandle])
+  }, [mutate, user?.avatar, user?.codeforcesHandle, user?.rating])
 
   useEffect(() => {
     if (user) {
