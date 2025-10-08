@@ -1,74 +1,76 @@
-import { useEffect, useMemo, useCallback } from 'react';
-import useSWR from 'swr';
-import { TrainingProblem } from '@/types/TrainingProblem';
-import { SuccessResponse, ErrorResponse } from '@/types/Response';
-import useUser from '@/hooks/useUser';
-import useProblems from '@/hooks/useProblems';
+import { useEffect, useMemo, useCallback } from 'react'
+import useSWR from 'swr'
+import { TrainingProblem } from '@/types/TrainingProblem'
+import { SuccessResponse, ErrorResponse } from '@/types/Response'
+import useUser from '@/hooks/useUser'
+import useProblems from '@/hooks/useProblems'
 
-const UPSOLVED_PROBLEMS_CACHE_KEY = 'training-tracker-upsolved-problems';
+const UPSOLVED_PROBLEMS_CACHE_KEY = 'training-tracker-upsolved-problems'
 
 const getStoredUpsolvedProblems = () => {
   try {
-    const stored = localStorage.getItem(UPSOLVED_PROBLEMS_CACHE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    const stored = localStorage.getItem(UPSOLVED_PROBLEMS_CACHE_KEY)
+    return stored ? JSON.parse(stored) : []
   } catch {
-    return [];
+    return []
   }
-};
+}
 
 const useUpsolvedProblems = () => {
-  const { user } = useUser();
+  const { user } = useUser()
+
   const {
     isLoading: isProblemsLoading,
     refreshSolvedProblems,
-    solvedProblems,
-  } = useProblems(user);
+    solvedProblems
+  } = useProblems(user)
+
   const { data, isLoading, error, mutate } = useSWR<TrainingProblem[]>(
     UPSOLVED_PROBLEMS_CACHE_KEY,
     getStoredUpsolvedProblems
-  );
+  )
 
   // make sure the data is an array
-  const upsolvedProblems = useMemo(() => data ?? [], [data]);
+  const upsolvedProblems = useMemo(() => data ?? [], [data])
 
   const refreshUpsolvedProblems = useCallback(async () => {
     if (upsolvedProblems?.length === 0) {
-      return;
+      return
     }
     const newUpsolvedProblems = upsolvedProblems.map((problem) => {
       const solvedProblem = solvedProblems.find(
         (p) => p.contestId === problem.contestId && p.index === problem.index
-      );
+      )
       if (solvedProblem && !problem.solvedTime) {
         return {
           ...problem,
-          solvedTime: new Date().getTime(),
-        };
+          solvedTime: new Date().getTime()
+        }
       }
-      return problem;
-    });
+      return problem
+    })
 
     if (
       JSON.stringify(newUpsolvedProblems) !== JSON.stringify(upsolvedProblems)
     ) {
-      await mutate(newUpsolvedProblems, { revalidate: false });
+      await mutate(newUpsolvedProblems, { revalidate: false })
     }
-  }, [upsolvedProblems, solvedProblems, mutate]);
+  }, [upsolvedProblems, solvedProblems, mutate])
 
   useEffect(() => {
     if (solvedProblems?.length > 0) {
-      refreshUpsolvedProblems();
+      refreshUpsolvedProblems()
     }
-  }, [solvedProblems, refreshUpsolvedProblems]);
+  }, [solvedProblems, refreshUpsolvedProblems])
 
   useEffect(() => {
     if (upsolvedProblems) {
       localStorage.setItem(
         UPSOLVED_PROBLEMS_CACHE_KEY,
         JSON.stringify(upsolvedProblems)
-      );
+      )
     }
-  }, [upsolvedProblems]);
+  }, [upsolvedProblems])
 
   const addUpsolvedProblems = async (problems: TrainingProblem[]) => {
     try {
@@ -79,36 +81,36 @@ const useUpsolvedProblems = () => {
             (p) =>
               p.contestId === problem.contestId && p.index === problem.index
           )
-      );
+      )
 
       if (newProblems.length === 0) {
-        return SuccessResponse(upsolvedProblems);
+        return SuccessResponse(upsolvedProblems)
       }
 
-      const newUpsolvedProblems = [...(upsolvedProblems ?? []), ...newProblems];
-      await mutate(newUpsolvedProblems, { revalidate: false });
-      return SuccessResponse(newUpsolvedProblems);
+      const newUpsolvedProblems = [...(upsolvedProblems ?? []), ...newProblems]
+      await mutate(newUpsolvedProblems, { revalidate: false })
+      return SuccessResponse(newUpsolvedProblems)
     } catch (error) {
-      return ErrorResponse(error as string);
+      return ErrorResponse(error as string)
     }
-  };
+  }
 
   const deleteUpsolvedProblem = async (problem: TrainingProblem) => {
     try {
       const newUpsolvedProblems = upsolvedProblems?.filter(
         (p) => p.contestId !== problem.contestId && p.index !== problem.index
-      );
-      await mutate(newUpsolvedProblems, { revalidate: false });
-      return SuccessResponse(newUpsolvedProblems);
+      )
+      await mutate(newUpsolvedProblems, { revalidate: false })
+      return SuccessResponse(newUpsolvedProblems)
     } catch (error) {
-      return ErrorResponse(error as string);
+      return ErrorResponse(error as string)
     }
-  };
+  }
 
   const onRefreshUpsolvedProblems = async () => {
-    await refreshSolvedProblems();
-    await refreshUpsolvedProblems();
-  };
+    await refreshSolvedProblems()
+    await refreshUpsolvedProblems()
+  }
 
   return {
     upsolvedProblems,
@@ -117,8 +119,8 @@ const useUpsolvedProblems = () => {
     addUpsolvedProblems,
     deleteUpsolvedProblem,
     refreshUpsolvedProblems,
-    onRefreshUpsolvedProblems,
-  };
-};
+    onRefreshUpsolvedProblems
+  }
+}
 
-export default useUpsolvedProblems;
+export default useUpsolvedProblems

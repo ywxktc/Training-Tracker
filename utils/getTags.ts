@@ -10,7 +10,7 @@ const tags = [
   'Bitmasks',
   'Data Structures',
   'Implementation',
-  'Trees',
-];
+  'Trees'
+]
 
-export default tags;
+export default tags

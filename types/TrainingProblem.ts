@@ -1,8 +1,8 @@
-import { CodeforcesProblem } from './Codeforces';
+import { CodeforcesProblem } from './Codeforces'
 
 type TrainingProblem = CodeforcesProblem & {
-  url: string;
-  solvedTime: number | null;
-};
+  url: string
+  solvedTime: number | null
+}
 
-export type { TrainingProblem };
+export type { TrainingProblem }

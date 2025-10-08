@@ -1,4 +1,4 @@
-import { Training } from '@/types/Training';
+import { Training } from '@/types/Training'
 import {
   LineChart,
   Line,
@@ -6,14 +6,14 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+  ResponsiveContainer
+} from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const ProgressChart = ({ history }: { history: Training[] }) => {
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString();
-  };
+    return new Date(timestamp).toLocaleDateString()
+  }
 
   return (
     <Card>
@@ -21,35 +21,35 @@ const ProgressChart = ({ history }: { history: Training[] }) => {
         <CardTitle>Progress Chart</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width='100%' height={300}>
           <LineChart
             data={history}
             margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
           >
-            <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+            <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
             <XAxis
-              dataKey="startTime"
+              dataKey='startTime'
               tickFormatter={formatDate}
-              interval="preserveStartEnd"
-              className="text-muted-foreground"
+              interval='preserveStartEnd'
+              className='text-muted-foreground'
             />
             <YAxis
               domain={[0, 100]}
               tickFormatter={(value) => `${value}`}
-              className="text-muted-foreground"
+              className='text-muted-foreground'
             />
             <Tooltip
               labelFormatter={formatDate}
               formatter={(value: number) => [`${value}`, 'Performance']}
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
-                borderColor: 'hsl(var(--border))',
+                borderColor: 'hsl(var(--border))'
               }}
             />
             <Line
-              type="monotone"
-              dataKey="performance"
-              stroke="hsl(var(--primary))"
+              type='monotone'
+              dataKey='performance'
+              stroke='hsl(var(--primary))'
               strokeWidth={2}
               dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2 }}
               activeDot={{ r: 8 }}
@@ -58,7 +58,7 @@ const ProgressChart = ({ history }: { history: Training[] }) => {
         </ResponsiveContainer>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default ProgressChart;
+export default ProgressChart

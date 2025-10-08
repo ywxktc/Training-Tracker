@@ -1,12 +1,12 @@
-import { Level } from '@/types/Level';
-import { TrainingProblem } from '@/types/TrainingProblem';
+import { Level } from '@/types/Level'
+import { TrainingProblem } from '@/types/TrainingProblem'
 
 type Training = {
-  level: Level;
-  startTime: number;
-  endTime: number;
-  problems: TrainingProblem[];
-  performance: number;
-};
+  level: Level
+  startTime: number
+  endTime: number
+  problems: TrainingProblem[]
+  performance: number
+}
 
-export type { Training };
+export type { Training }

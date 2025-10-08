@@ -1,10 +1,10 @@
-import { Level } from '@/types/Level';
+import { Level } from '@/types/Level'
 
 type User = {
-  codeforcesHandle: string;
-  rating: number;
-  avatar: string;
-  level: Level;
-};
+  codeforcesHandle: string
+  rating: number
+  avatar: string
+  level: Level
+}
 
-export type { User };
+export type { User }

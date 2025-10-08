@@ -1,38 +1,38 @@
-import { User } from '@/types/User';
-import { CodeforcesProblem, CodeforcesSubmission } from '@/types/Codeforces';
-import { SuccessResponse, ErrorResponse, Response } from '@/types/Response';
-import getSubmissions from '@/utils/codeforces/getSubmissions';
-import { getFromCache, setToCache } from '@/utils/cache';
+import { User } from '@/types/User'
+import { CodeforcesProblem, CodeforcesSubmission } from '@/types/Codeforces'
+import { SuccessResponse, ErrorResponse, Response } from '@/types/Response'
+import getSubmissions from '@/utils/codeforces/getSubmissions'
+import { getFromCache, setToCache } from '@/utils/cache'
 
 const getSolvedProblemsCacheKey = (user: User) =>
-  `codeforces-solved-${user.codeforcesHandle}`;
+  `codeforces-solved-${user.codeforcesHandle}`
 
 const fetchSolvedProblems = async (
   user: User
 ): Promise<Response<CodeforcesProblem[]>> => {
   try {
-    const res = await getSubmissions(user);
+    const res = await getSubmissions(user)
     if (!res.success) {
-      return ErrorResponse(res.error);
+      return ErrorResponse(res.error)
     }
-    const submissions = res.data;
+    const submissions = res.data
     const problems = submissions
       .filter((submission: CodeforcesSubmission) => submission.verdict === 'OK')
-      .map((submission: CodeforcesSubmission) => submission.problem);
+      .map((submission: CodeforcesSubmission) => submission.problem)
 
-    return SuccessResponse(problems);
+    return SuccessResponse(problems)
   } catch (error) {
-    return ErrorResponse((error as Error).message);
+    return ErrorResponse((error as Error).message)
   }
-};
+}
 
 const getSolvedProblems = async (
   user: User
 ): Promise<Response<CodeforcesProblem[]>> => {
-  const CACHE_KEY = getSolvedProblemsCacheKey(user);
+  const CACHE_KEY = getSolvedProblemsCacheKey(user)
 
   // Try to get from cache first
-  const cachedSolvedProblems = getFromCache<CodeforcesProblem[]>(CACHE_KEY);
+  const cachedSolvedProblems = getFromCache<CodeforcesProblem[]>(CACHE_KEY)
 
   // If cache exists, return immediately and refresh in background
   if (cachedSolvedProblems) {
@@ -40,22 +40,22 @@ const getSolvedProblems = async (
     fetchSolvedProblems(user)
       .then((freshData) => {
         if (freshData.success) {
-          setToCache(CACHE_KEY, freshData.data);
+          setToCache(CACHE_KEY, freshData.data)
         }
       })
       .catch((error) => {
-        console.error('Background refresh failed for solved problems:', error);
-      });
+        console.error('Background refresh failed for solved problems:', error)
+      })
 
-    return SuccessResponse(cachedSolvedProblems);
+    return SuccessResponse(cachedSolvedProblems)
   }
 
   // No cache exists, fetch synchronously
-  const freshData = await fetchSolvedProblems(user);
+  const freshData = await fetchSolvedProblems(user)
   if (freshData.success) {
-    setToCache(CACHE_KEY, freshData.data);
+    setToCache(CACHE_KEY, freshData.data)
   }
-  return freshData;
-};
+  return freshData
+}
 
-export default getSolvedProblems;
+export default getSolvedProblems

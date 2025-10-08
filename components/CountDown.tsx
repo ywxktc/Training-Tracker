@@ -1,58 +1,58 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState, useEffect } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
 
 const CountDown = ({
   startTime,
-  endTime,
+  endTime
 }: {
-  startTime: number;
-  endTime: number;
+  startTime: number
+  endTime: number
 }) => {
-  const [timeLeft, setTimeLeft] = useState<number>(0);
-  const [isStarted, setIsStarted] = useState<boolean>(false);
+  const [timeLeft, setTimeLeft] = useState<number>(0)
+  const [isStarted, setIsStarted] = useState<boolean>(false)
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const now = Date.now();
+      const now = Date.now()
       if (now < startTime) {
-        setIsStarted(false);
-        return startTime - now;
+        setIsStarted(false)
+        return startTime - now
       }
       if (now < endTime) {
-        setIsStarted(true);
-        return endTime - now;
+        setIsStarted(true)
+        return endTime - now
       }
-      setIsStarted(true);
-      return 0;
-    };
+      setIsStarted(true)
+      return 0
+    }
 
-    setTimeLeft(calculateTimeLeft());
+    setTimeLeft(calculateTimeLeft())
 
     const timer = setInterval(() => {
-      const remaining = calculateTimeLeft();
-      setTimeLeft(remaining);
+      const remaining = calculateTimeLeft()
+      setTimeLeft(remaining)
 
       if (remaining <= 0) {
-        clearInterval(timer);
+        clearInterval(timer)
       }
-    }, 1000);
+    }, 1000)
 
-    return () => clearInterval(timer);
-  }, [startTime, endTime]);
+    return () => clearInterval(timer)
+  }, [startTime, endTime])
 
-  const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+  const hours = Math.floor(timeLeft / (1000 * 60 * 60))
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60))
+  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
 
   return (
     <Card>
-      <CardContent className="pt-6">
-        <div className="text-2xl font-bold text-center">
+      <CardContent className='pt-6'>
+        <div className='text-2xl font-bold text-center'>
           {timeLeft === 0 ? (
             isStarted ? (
-              <span className="text-red-500">Training has ended</span>
+              <span className='text-red-500'>Training has ended</span>
             ) : (
-              <span className="text-green-500">Training will start soon</span>
+              <span className='text-green-500'>Training will start soon</span>
             )
           ) : (
             <span>
@@ -65,7 +65,7 @@ const CountDown = ({
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
-export default CountDown;
+export default CountDown

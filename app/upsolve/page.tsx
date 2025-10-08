@@ -1,10 +1,10 @@
-'use client';
+'use client'
 
-import { TrainingProblem } from '@/types/TrainingProblem';
-import useUpsolvedProblems from '@/hooks/useUpsolvedProblems';
-import Loader from '@/components/Loader';
-import Error from '@/components/Error';
-import UpsolvedProblemsList from '@/components/UpsolvedProblemsList';
+import { TrainingProblem } from '@/types/TrainingProblem'
+import useUpsolvedProblems from '@/hooks/useUpsolvedProblems'
+import Loader from '@/components/Loader'
+import Error from '@/components/Error'
+import UpsolvedProblemsList from '@/components/UpsolvedProblemsList'
 
 const Upsolve = () => {
   const {
@@ -12,25 +12,25 @@ const Upsolve = () => {
     isLoading,
     error,
     deleteUpsolvedProblem,
-    onRefreshUpsolvedProblems,
-  } = useUpsolvedProblems();
+    onRefreshUpsolvedProblems
+  } = useUpsolvedProblems()
 
   if (isLoading) {
-    return <Loader />;
+    return <Loader />
   }
 
   if (error) {
-    return <Error />;
+    return <Error />
   }
 
   const onDelete = (problem: TrainingProblem) => {
     if (confirm('Are you sure you want to delete this problem?')) {
-      deleteUpsolvedProblem(problem);
+      deleteUpsolvedProblem(problem)
     }
-  };
+  }
 
   if (!upsolvedProblems || upsolvedProblems.length === 0) {
-    return <div>No problems to upsolve.</div>;
+    return <div>No problems to upsolve.</div>
   }
 
   return (
@@ -41,7 +41,7 @@ const Upsolve = () => {
         onRefresh={onRefreshUpsolvedProblems}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Upsolve;
+export default Upsolve

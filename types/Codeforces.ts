@@ -4,9 +4,9 @@
 */
 
 type Member = {
-  handle: string;
-  name: string;
-};
+  handle: string
+  name: string
+}
 
 /*
   contestId	Integer. Can be absent. Id of the contest, in which party is participating.
@@ -20,15 +20,15 @@ type Member = {
 */
 
 type Party = {
-  contestId: number;
-  members: Member[];
-  participantType: string;
-  teamId: number;
-  teamName: string;
-  ghost: boolean;
-  room: number;
-  startTimeSeconds: number;
-};
+  contestId: number
+  members: Member[]
+  participantType: string
+  teamId: number
+  teamName: string
+  ghost: boolean
+  room: number
+  startTimeSeconds: number
+}
 
 /*
   contestId	Integer. Can be absent. Id of the contest, containing the problem.
@@ -42,15 +42,15 @@ type Party = {
 */
 
 type CodeforcesProblem = {
-  contestId: number;
-  problemsetName: string;
-  index: string;
-  name: string;
-  type: string;
-  points: number;
-  rating: number;
-  tags: string[];
-};
+  contestId: number
+  problemsetName: string
+  index: string
+  name: string
+  type: string
+  points: number
+  rating: number
+  tags: string[]
+}
 
 /*
   id	Integer.
@@ -69,44 +69,44 @@ type CodeforcesProblem = {
 */
 
 type CodeforcesSubmission = {
-  id: number;
-  contestId: number;
-  creationTimeSeconds: number;
-  relativeTimeSeconds: number;
-  problem: CodeforcesProblem;
-  author: Party;
-  programmingLanguage: string;
-  verdict: string;
-  testset: string;
-  passedTestCount: number;
-  timeConsumedMillis: number;
-  memoryConsumedBytes: number;
-  points: number;
-};
+  id: number
+  contestId: number
+  creationTimeSeconds: number
+  relativeTimeSeconds: number
+  problem: CodeforcesProblem
+  author: Party
+  programmingLanguage: string
+  verdict: string
+  testset: string
+  passedTestCount: number
+  timeConsumedMillis: number
+  memoryConsumedBytes: number
+  points: number
+}
 
 type ProblemTag = {
-  name: string;
-  value: string;
-};
+  name: string
+  value: string
+}
 
 type Contest = {
-  id: number;
-  name: string;
-  type: string;
-  phase: string;
-  frozen: boolean;
-  durationSeconds: number;
-  startTimeSeconds: number;
-  relativeTimeSeconds: number;
-  preparedBy: string;
-  websiteUrl: string;
-  description: string;
-  difficulty: number;
-  kind: string;
-  icpcRegion: string;
-  country: string;
-  city: string;
-  season: string;
-};
+  id: number
+  name: string
+  type: string
+  phase: string
+  frozen: boolean
+  durationSeconds: number
+  startTimeSeconds: number
+  relativeTimeSeconds: number
+  preparedBy: string
+  websiteUrl: string
+  description: string
+  difficulty: number
+  kind: string
+  icpcRegion: string
+  country: string
+  city: string
+  season: string
+}
 
-export type { CodeforcesProblem, CodeforcesSubmission, ProblemTag, Contest };
+export type { CodeforcesProblem, CodeforcesSubmission, ProblemTag, Contest }

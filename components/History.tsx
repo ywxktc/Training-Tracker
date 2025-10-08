@@ -1,60 +1,58 @@
-import Link from 'next/link';
-import { Training } from '@/types/Training';
-import { TrainingProblem } from '@/types/TrainingProblem';
-import { Button } from '@/components/ui/button';
+import Link from 'next/link'
+import { Training } from '@/types/Training'
+import { TrainingProblem } from '@/types/TrainingProblem'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Trash2 } from 'lucide-react';
+  TableRow
+} from '@/components/ui/table'
+import { Trash2 } from 'lucide-react'
 
 const Problem = ({
   problem,
-  startTime,
+  startTime
 }: {
-  problem: TrainingProblem;
-  startTime: number;
+  problem: TrainingProblem
+  startTime: number
 }) => {
   const getSolvedStatus = () => {
     if (problem.solvedTime) {
-      const solvedMinutes = Math.floor(
-        (problem.solvedTime - startTime) / 60000
-      );
-      return `✅ ${solvedMinutes}m `;
+      const solvedMinutes = Math.floor((problem.solvedTime - startTime) / 60000)
+      return `✅ ${solvedMinutes}m `
     }
-    return '❌ ';
-  };
+    return '❌ '
+  }
   return (
     <Link
-      className="text-primary hover:underline duration-300"
+      className='text-primary hover:underline duration-300'
       href={problem.url}
-      target="_blank"
+      target='_blank'
     >
       {getSolvedStatus()}
       {problem.contestId}-{problem.index}
     </Link>
-  );
-};
+  )
+}
 
 const History = ({
   history,
-  deleteTraining,
+  deleteTraining
 }: {
-  history: Training[];
-  deleteTraining: (training: Training) => void;
+  history: Training[]
+  deleteTraining: (training: Training) => void
 }) => {
   const onDelete = (training: Training) => {
     if (confirm('Are you sure you want to delete this record?')) {
-      deleteTraining(training);
+      deleteTraining(training)
     }
-  };
+  }
 
   return (
-    <div className="w-full overflow-x-auto">
+    <div className='w-full overflow-x-auto'>
       <Table>
         <TableHeader>
           <TableRow>
@@ -82,11 +80,11 @@ const History = ({
               <TableCell>{training.performance}</TableCell>
               <TableCell>
                 <Button
-                  variant="ghost"
-                  size="sm"
+                  variant='ghost'
+                  size='sm'
                   onClick={() => onDelete(training)}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className='h-4 w-4' />
                 </Button>
               </TableCell>
             </TableRow>
@@ -94,7 +92,7 @@ const History = ({
         </TableBody>
       </Table>
     </div>
-  );
-};
+  )
+}
 
-export default History;
+export default History

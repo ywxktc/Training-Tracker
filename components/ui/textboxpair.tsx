@@ -1,36 +1,36 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import * as React from 'react'
+import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 interface TextboxpairProps extends React.HTMLAttributes<HTMLDivElement> {
-  onFirstInputChange: (e: string) => void;
-  onSecondInputChange: (e: string) => void;
+  onFirstInputChange: (e: string) => void
+  onSecondInputChange: (e: string) => void
 }
 
 const Textboxpair = React.forwardRef<HTMLDivElement, TextboxpairProps>(
   (props, ref) => {
     // Destructure the event handlers and other props separately
-    const { onFirstInputChange, onSecondInputChange, ...otherProps } = props;
+    const { onFirstInputChange, onSecondInputChange, ...otherProps } = props
 
     return (
-      <div ref={ref} className="flex gap-1" {...otherProps}>
+      <div ref={ref} className='flex gap-1' {...otherProps}>
         <Modded_input
-          type="text"
-          placeholder="Oldest Round"
+          type='text'
+          placeholder='Oldest Round'
           onChange={(e) => onFirstInputChange(e.target.value)}
         />
         <Modded_input
-          type="text"
-          placeholder="Newest Round"
+          type='text'
+          placeholder='Newest Round'
           onChange={(e) => onSecondInputChange(e.target.value)}
         />
       </div>
-    );
+    )
   }
-);
-Textboxpair.displayName = 'Textboxpair';
+)
+Textboxpair.displayName = 'Textboxpair'
 
 const Modded_input = React.forwardRef<
   HTMLInputElement,
@@ -47,8 +47,8 @@ const Modded_input = React.forwardRef<
       ref={ref}
       {...props}
     />
-  );
-});
-Modded_input.displayName = 'Modded_input';
+  )
+})
+Modded_input.displayName = 'Modded_input'
 
-export { Textboxpair };
+export { Textboxpair }
